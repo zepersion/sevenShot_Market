@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 MethodArgumentNotValidException：前端传 JSON 请求体（@RequestBody），DTO 校验失败抛出
 BindException：前端传表单、地址栏参数（@RequestParam）校验失败抛出
 只要参数不符合 @NotBlank、@NotNull、@Pattern 等校验规则，Spring 自动抛出上面其中一个异常，自动进入这个方法处理。*/
-    @ExceptionHandler(value = MethodArgumentNotValidException.class, exception = BindException.class)
+@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     public  Result<Void> handleValidException(Exception e){
         String msg = e.getMessage();
         if(e instanceof MethodArgumentNotValidException ex  &&ex.getBindingResult().getFieldError()!=null){
