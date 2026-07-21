@@ -18,4 +18,5 @@ public class UserDto {
     private Integer creditLevel;
     private Integer status;
     private LocalDateTime createTime;
+    private String code;
 }

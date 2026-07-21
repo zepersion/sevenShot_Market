@@ -16,6 +16,9 @@ public class Result<T> {
     public static<T> Result<T> success(){
         return new Result<>(200, "success", null);
     }
+    public static<T>    Result<T> success(T data,String message){
+        return new Result<>(200, message, data);
+    }
     public static<T>    Result<T> success(T data){
         return new Result<>(200, "success", data);
     }
