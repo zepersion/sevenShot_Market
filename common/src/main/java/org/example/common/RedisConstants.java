@@ -9,4 +9,7 @@ public class RedisConstants {
 
     //签到
     public static final String USER_SIGN_KEY = "sign:";
+    public static final Long USER_SIGN_TTL = 30L;
+    //签到的连续日期
+    public static final String USER_CONTINUESIGN_KEY = "user:info:";
 }
