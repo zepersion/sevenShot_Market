@@ -6,4 +6,6 @@ import org.example.common.vo.UserVO;
 
 public interface UserSignService {
     SignInVO sign(SignInDTO dto);
+
+    SignInVO signRecord(SignInDTO dto);
 }

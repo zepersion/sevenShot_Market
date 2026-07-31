@@ -100,8 +100,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Map<String, Object> objMap = BeanUtil.beanToMap(userDto, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
-                        .setFieldValueEditor((fieldName, fieldVal) -> fieldVal.toString()));
-
+                        .setFieldValueEditor((fieldName, fieldVal) -> {
+                            if (fieldVal == null) {
+                                return null;
+                            }
+                            return fieldVal.toString();
+                        }));
         Map<String, String> strMap = new HashMap<>();
         objMap.forEach((k, v) -> strMap.put(k, v != null ? v.toString() : ""));
 
@@ -152,7 +156,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Map<String, Object> objMap = BeanUtil.beanToMap(userDto, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
-                        .setFieldValueEditor((fieldName, fieldVal) -> fieldVal.toString()));
+                        .setFieldValueEditor((fieldName, fieldVal) -> {
+                            if (fieldVal == null) {
+                                return null;
+                            }
+                            return fieldVal.toString();
+                        }));
 
         Map<String, String> strMap = new HashMap<>();
         objMap.forEach((k, v) -> strMap.put(k, v != null ? v.toString() : ""));

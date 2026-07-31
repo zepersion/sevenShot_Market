@@ -6,13 +6,12 @@ import org.example.common.vo.SignInVO;
 import org.example.common.vo.UserVO;
 import org.example.user.service.UserSignService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/sign")
 public class UserSignController {
     @Autowired
     private UserSignService userSignService;
@@ -20,5 +19,11 @@ public class UserSignController {
     public Result<SignInVO> userSign(@RequestBody SignInDTO dto) {
         SignInVO vo=userSignService.sign(dto);
         return Result.success(vo,"签到成功");
+    }
+    @GetMapping("/record")
+    public  Result<SignInVO> userSignRecord(SignInDTO dto) {
+        SignInVO signInVO = userSignService.signRecord(dto);
+        return Result.success(signInVO,"success");
+
     }
 }
