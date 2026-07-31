@@ -8,8 +8,20 @@ public class RedisConstants {
     public static final Long LOGIN_TOKEN_TTL = 30L;
 
     //签到
-    public static final String USER_SIGN_KEY = "sign:";
+    public static final String USER_SIGN_KEY = "sign:user:";
     public static final Long USER_SIGN_TTL = 30L;
     //签到的连续日期
-    public static final String USER_CONTINUESIGN_KEY = "user:info:";
+    public static final String USER_CONTINUESIGN_KEY = "user:continuous:";
+    //关注和粉丝
+    public static final String USER_FOLLOW_KEY = "user:follow:";
+    public static final String USER_FANS_KEY = "user:fans:";
+    //商品信息
+    public static final String GOODS_INFO_KEY = "goods:info:";
+    //商品点赞
+    public static final String GOODS_LIKE_KEY = "like:goods:";
+    public static final String GOODS_FAVORITE_SET = "goods:favorite:";
+    //收藏
+    public static final String GOODS_FAVORITE_KEY = "favorite:goods:";
+    //商品热度
+    public static final String GOODS_RANKS_HOT_KEY = "goods:ranksing:hot:";
 }

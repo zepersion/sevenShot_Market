@@ -29,8 +29,7 @@ import static org.example.common.RedisConstants.USER_SIGN_KEY;
 @Slf4j
 @Service
 public class UserSignServiceImpl extends ServiceImpl<UserSignMapper, UserSign> implements UserSignService {
-@Autowired
-private UserService userService;
+
 @Autowired
 private StringRedisTemplate stringRedisTemplate;
     @Override

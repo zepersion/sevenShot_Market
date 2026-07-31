@@ -1,4 +1,7 @@
+E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\Constants.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\dto\CodeDTO.java
+E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\dto\FollowDTO.java
+E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\dto\GoodsPublishDTO.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\dto\RegisterDTO.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\dto\SignInDTO.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\dto\UserDto.java
@@ -9,6 +12,9 @@ E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\exc
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\RedisConstants.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\Result.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\utils\UserHolder.java
+E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\vo\FollowUserVO.java
+E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\vo\GoodsVO.java
+E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\vo\PageVO.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\vo\RegisterVO.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\vo\SignInVO.java
 E:\SevenShot Market\SevenShot_Market\common\src\main\java\org\example\common\vo\UserLoginVo.java

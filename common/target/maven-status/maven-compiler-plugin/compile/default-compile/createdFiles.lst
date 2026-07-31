@@ -3,6 +3,7 @@ org\example\common\dto\UserUpdateDTO.class
 org\example\common\exception\GlobalExceptionHandler.class
 org\example\common\dto\CodeDTO.class
 org\example\common\vo\SignInVO.class
+org\example\common\dto\FollowDTO.class
 org\example\common\vo\UserVO.class
 org\example\common\exception\BusinessException.class
 org\example\common\dto\UserLoginDto.class
@@ -11,5 +12,10 @@ org\example\common\vo\UserLoginVo.class
 org\example\common\dto\RegisterDTO.class
 org\example\common\dto\UserDto.class
 org\example\common\dto\SignInDTO.class
+org\example\common\vo\FollowUserVO.class
 org\example\common\RedisConstants.class
+org\example\common\Constants.class
+org\example\common\dto\GoodsPublishDTO.class
+org\example\common\vo\PageVO.class
 org\example\common\vo\RegisterVO.class
+org\example\common\vo\GoodsVO.class

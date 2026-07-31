@@ -9,16 +9,13 @@ import jakarta.servlet.http.HttpSession;
 import org.example.common.dto.RegisterDTO;
 import org.example.common.dto.UserLoginDto;
 import org.example.common.dto.UserUpdateDTO;
+import org.example.common.vo.*;
 import org.example.user.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.dto.CodeDTO;
 import org.example.common.dto.UserDto;
 import org.example.user.mapper.UserMapper;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.RegisterVO;
-import org.example.common.vo.SignInVO;
-import org.example.common.vo.UserLoginVo;
-import org.example.common.vo.UserVO;
 import org.example.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -35,10 +32,12 @@ import static org.example.common.RedisConstants.*;
 
 @Slf4j
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User>implements UserService {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+
 
     @Override
     public void sendCode(CodeDTO codeDto) {
@@ -193,4 +192,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(dto.getSchool() != null, User::getSchool, dto.getSchool())
                 .update();
     }
+
+
 }

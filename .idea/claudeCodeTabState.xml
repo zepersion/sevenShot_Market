@@ -7,10 +7,10 @@
           <value>
             <TabSessionState>
               <option name="provider" value="claude" />
-              <option name="sessionId" value="39af66e3-3bdd-4a19-8736-8fb17e470196" />
+              <option name="sessionId" value="cbdc0fe5-d56b-491a-a297-8e5a17cd8f13" />
               <option name="cwd" value="$PROJECT_DIR$" />
-              <option name="model" value="claude-opus-4-8[1m]" />
-              <option name="permissionMode" value="bypassPermissions" />
+              <option name="model" value="glm-4-flash" />
+              <option name="permissionMode" value="default" />
             </TabSessionState>
           </value>
         </entry>

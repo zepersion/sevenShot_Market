@@ -5,21 +5,32 @@ import jakarta.validation.Valid;
 
 import org.example.common.Result;
 import org.example.common.dto.*;
+import org.example.common.vo.*;
+import org.example.user.entity.UserCredit;
+import org.example.user.entity.UserFollow;
+import org.example.user.mapper.UserMapper;
+import org.example.user.service.UserCreditService;
+import org.example.user.service.UserFollowService;
 import org.example.user.service.UserService;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.RegisterVO;
-import org.example.common.vo.SignInVO;
-import org.example.common.vo.UserLoginVo;
-import org.example.common.vo.UserVO;
+import org.example.user.service.UserSignService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-
+@FeignClient(name = "user-service", path = "/api/user")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserSignService userSignService;
+    @Autowired
+    private UserFollowService userFollowService;
+    @Autowired
+    private UserCreditService userCreditService;
 
     @PostMapping("/code")
     public Result sendCode(@Valid @RequestBody CodeDTO codeDto) {
@@ -52,12 +63,46 @@ public class UserController {
         UserDto user = UserHolder.getUser();
         return Result.success(user);
     }
+
     @PutMapping("/info")
     public Result updateUser(@RequestBody UserUpdateDTO dto) {
-
-            UserDto user = UserHolder.getUser();
+        UserDto user = UserHolder.getUser();
         userService.updateInfo(user.getId(), dto);
         return Result.success();
     }
 
+    @PostMapping("/sign")
+    public Result<SignInVO> userSign(@RequestBody SignInDTO dto) {
+        SignInVO vo = userSignService.sign(dto);
+        return Result.success(vo, "签到成功");
+    }
+
+    @GetMapping("/sign/record")
+    public Result<SignInVO> userSignRecord(SignInDTO dto) {
+        SignInVO signInVO = userSignService.signRecord(dto);
+        return Result.success(signInVO, "success");
+
+    }
+
+    @PostMapping("/follow/{userId}")//userId代表被关注的人
+    public Result follow(@PathVariable("UserId") Long userId) {
+        FollowUserVO vo = userFollowService.isFollow(userId);
+        return Result.success(vo, "success");
+    }
+    @GetMapping("/follow/list")
+    public  Result<PageVO<UserFollow>> followList(@RequestParam Integer type,
+                              @RequestParam Integer page,
+                                                  @RequestParam Integer size) {
+        Long userId = UserHolder.getUser().getId();
+        PageVO<UserFollow> vo = userFollowService.getFollowList(page,type, userId,size);
+            return Result.success(vo, "success");
+    }
+    @GetMapping("/credit/records")
+    public Result getCreditRecords(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer size){
+        Long id = UserHolder.getUser().getId();
+        PageVO<UserCredit> vo=userCreditService.getCreditRecords(page,size,id);
+        return Result.success("vo","success");
+    }
 }
