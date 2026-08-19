@@ -41,8 +41,8 @@ private GoodsService goodsService;
         return Result.success(vo);
     }
     @GetMapping("/{id}")
-    public Result detail(GoodsDTO dto,@PathVariable Long id) {
-        GoodsVO vo=goodsService.goodsDetail(dto,id);
+    public Result detail(@PathVariable Long id) {
+        GoodsVO vo=goodsService.goodsDetail(id);
         return Result.success(vo);
     }
     //点赞功能

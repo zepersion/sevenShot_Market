@@ -18,6 +18,8 @@ import org.example.goodsservice.mapper.GoodsMapper;
 import org.example.goodsservice.mq.GoodsProducer;
 import org.example.common.Message.GoodsPublishMQMessage;
 import org.example.goodsservice.service.GoodsService;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -29,8 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.example.common.RedisConstants.GOODS_INFO_KEY;
-import static org.example.common.RedisConstants.GOODS_RANKS_HOT_KEY;
+import static org.example.common.RedisConstants.*;
 
 @Slf4j
 @Service
@@ -43,7 +44,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private GoodsProducer goodsProducer;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    
+    @Autowired
+    private RedissonClient redissonClient;
     
     
     @Override
@@ -108,27 +110,58 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
         return pageVO;
     }
+//改造该功能利用redisson防止缓存雪崩
 
     @Override
-    public GoodsVO goodsDetail(GoodsDTO dto, Long id) {
+    public GoodsVO goodsDetail( Long id) throws InterruptedException {
         GoodsVO vo = new GoodsVO();
+        //key
         String key=GOODS_INFO_KEY+id;
+        String lockKey = LOCK_GOODS_KEY+id;
+
+        //如果命中则不加锁
         String s = stringRedisTemplate.opsForValue().get(key);
         if(StrUtil.isNotBlank(s)){
-            JSONUtil.toJsonPrettyStr(s);
+            if("{}".equals(s)){
+                log.error("该商品不存在");
+                return null;
+            }
             GoodsVO bean = JSONUtil.toBean(s, GoodsVO.class);
             return bean;
         }
+//未命中
+        Goods goods = new Goods();
+        RLock lock = redissonClient.getLock(lockKey);
+        try {
 
-        Goods one = query().eq("id", id).one();
+            boolean isLock= lock.tryLock(10, TimeUnit.SECONDS);
+            //为获取锁
+            if(! isLock){
+                throw new RuntimeException("访问人数过多,请稍后再试");
+            }
+             s = stringRedisTemplate.opsForValue().get(key);
+            if(StrUtil.isNotBlank(s)){
+                if("{}".equals(s)){
+                    log.error("该商品不存在");
+                    return null;
+                }
+                GoodsVO bean = JSONUtil.toBean(s, GoodsVO.class);
+                return bean;
+            }//双重验证
+            //查数据库
+            goods= query().eq("id", id).one();
+            if (goods == null) {
+                stringRedisTemplate.opsForValue().set(key, "{}", 10, TimeUnit.MINUTES);
+                throw new RuntimeException("没有该商品的信息");
+            }
 
-        if(one==null){
-            throw new RuntimeException("没有该商品的信息");
-        }
-
-        BeanUtils.copyProperties(one, vo);
-        stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(vo),30, TimeUnit.MINUTES);
-
+            BeanUtils.copyProperties(goods, vo);
+            stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(vo), 30, TimeUnit.MINUTES);
+        }finally {
+                if(lock.isHeldByCurrentThread()){
+                    lock.unlock();
+                }
+            }
         return vo;
     }
 

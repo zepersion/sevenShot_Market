@@ -18,7 +18,7 @@ public interface GoodsService {
 
     PageVO<GoodsVO> goodsToList(GoodsListDTO dto, Integer page, Integer size);
 
-    GoodsVO goodsDetail(GoodsDTO dto, Long id);
+    GoodsVO goodsDetail( Long id) throws InterruptedException;
 
     PageVO<GoodsVO> myList(Integer page, Integer size);
 

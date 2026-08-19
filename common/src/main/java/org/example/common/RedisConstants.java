@@ -17,6 +17,8 @@ public class RedisConstants {
     public static final String USER_FANS_KEY = "user:fans:";
     //商品信息
     public static final String GOODS_INFO_KEY = "goods:info:";
+    public static final Long GOODS_INFO_TTL = 30L;
+    public static final String LOCK_GOODS_KEY="lock:goods:";
     //商品点赞
     public static final String GOODS_LIKE_KEY = "like:goods:";
     public static final String GOODS_FAVORITE_SET = "goods:favorite:";
