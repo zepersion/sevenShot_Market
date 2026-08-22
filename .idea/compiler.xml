@@ -23,6 +23,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel target="17">
       <module name="AI-service" target="17" />
+      <module name="seckill-service" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -32,6 +33,7 @@
       <module name="SevenShot_Market" options="" />
       <module name="common" options="-parameters" />
       <module name="goods-service" options="-parameters" />
+      <module name="seckill-service" options="-parameters" />
       <module name="services" options="" />
       <module name="user-service" options="-parameters" />
     </option>

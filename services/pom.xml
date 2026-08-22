@@ -18,6 +18,7 @@
         <module>user-service</module>
         <module>good-service</module>
         <module>Ai-service</module>
+
     </modules>
 
     <!-- ✅新增，把goods-service加入聚合模块 -->

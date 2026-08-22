@@ -26,4 +26,14 @@ public class RedisConstants {
     public static final String GOODS_FAVORITE_KEY = "favorite:goods:";
     //商品热度
     public static final String GOODS_RANKS_HOT_KEY = "goods:ranksing:hot:";
+    //秒杀
+    public static final String SECKILL_LIST_KEY="seckill:list:";
+    public static final String SECKILL_SOLDCOUNT_KEY="seckill:sold:";
+    public static final String SECKILL_LIMITER="seckill:limit:";
+    public static final String SECKILL_STOCK_KEY="seckill:stock:";
+    public static final String SECKILL_INFO_KEY="seckill:info:";
+    public static final String SECKILL_STARTTIME_KEY="seckill:starttime:";
+    public static final String SECKILL_ENDTTIME_KEY="seckill:endtime:";
+    public static final String SECKILL_USER_SET_KEY = "seckill:user:";
+    public static final String USER_KEY = "user:";
 }

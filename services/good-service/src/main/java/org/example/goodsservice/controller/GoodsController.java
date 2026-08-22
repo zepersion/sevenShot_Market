@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.example.common.Result;
 import org.example.common.dto.*;
-import org.example.common.vo.GoodsCategoryVO;
-import org.example.common.vo.GoodsVO;
-import org.example.common.vo.HotRankVO;
-import org.example.common.vo.PageVO;
+import org.example.common.vo.*;
 import org.example.goodsservice.service.GoodsCategoryService;
 import org.example.goodsservice.service.GoodsFavoriteService;
 import org.example.goodsservice.service.GoodsLikeService;
@@ -41,7 +38,7 @@ private GoodsService goodsService;
         return Result.success(vo);
     }
     @GetMapping("/{id}")
-    public Result detail(@PathVariable Long id) {
+    public Result detail(@PathVariable Long id) throws InterruptedException {
         GoodsVO vo=goodsService.goodsDetail(id);
         return Result.success(vo);
     }
@@ -84,4 +81,5 @@ private GoodsService goodsService;
        List <HotRankVO> vo= goodsService.getHotRank(dto);
         return Result.success(vo);
     }
+
 }

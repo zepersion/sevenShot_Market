@@ -2,13 +2,8 @@ package org.example.goodsservice.service;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.example.common.dto.GoodsDTO;
-import org.example.common.dto.GoodsListDTO;
-import org.example.common.dto.GoodsPublishDTO;
-import org.example.common.dto.HotRankDTO;
-import org.example.common.vo.GoodsVO;
-import org.example.common.vo.HotRankVO;
-import org.example.common.vo.PageVO;
+import org.example.common.dto.*;
+import org.example.common.vo.*;
 
 import java.util.List;
 
@@ -25,4 +20,10 @@ public interface GoodsService {
     void offSaleGoods(@NotNull Long id);
 
    List<HotRankVO> getHotRank(HotRankDTO dto);
+
+    SeckillGoodsDataVO seckillList();
+
+   void seckill(Long goodsId, SeckillSaleDTO dto);
+
+    void SeckillPreload();
 }

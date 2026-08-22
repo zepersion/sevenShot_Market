@@ -1,5 +1,6 @@
 package org.example.goodsservice.service.Impl;
 
+
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -7,29 +8,39 @@ import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
+import org.example.common.Message.SeckillOrderMessage;
 import org.example.common.dto.*;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.GoodsVO;
-import org.example.common.vo.HotRankVO;
-import org.example.common.vo.PageVO;
+import org.example.common.vo.*;
 import org.example.goodsservice.FeignClient.UserFeignClient;
 import org.example.goodsservice.entity.Goods;
 import org.example.goodsservice.mapper.GoodsMapper;
 import org.example.goodsservice.mq.GoodsProducer;
 import org.example.common.Message.GoodsPublishMQMessage;
 import org.example.goodsservice.service.GoodsService;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import static org.example.common.RedisConstants.*;
 
@@ -46,7 +57,16 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedissonClient redissonClient;
-    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    private  static final   DefaultRedisScript<Long> SECKILL_SCRIPT;
+    static {
+        SECKILL_SCRIPT = new DefaultRedisScript<>();
+        //读取resources下的lua脚本文件
+        Resource resource = new ClassPathResource("seckill.lua");
+        SECKILL_SCRIPT.setLocation(resource);
+        SECKILL_SCRIPT.setResultType(Long.class);
+    }
     
     @Override
     public GoodsVO publish(GoodsPublishDTO dto) {
@@ -266,4 +286,142 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         return voList;
         }
+
+    @Override
+    public SeckillGoodsDataVO seckillList() {
+        //vo
+        SeckillGoodsDataVO vo = new SeckillGoodsDataVO();
+        SeckillGoodsObjectVO objectVO = new SeckillGoodsObjectVO();
+        //key
+        String listKey=SECKILL_LIST_KEY;
+
+        String s = stringRedisTemplate.opsForValue().get(listKey);
+        if(s!=null && !"".equals(s)&&!s.isBlank()){
+            vo = JSONUtil.toBean(s,SeckillGoodsDataVO.class);
+
+            return vo;
+        }
+
+        List<Goods> goodsList = lambdaQuery()
+                .eq(Goods::getIsSeckill, 1)
+                .list();
+        List<SeckillGoodsObjectVO> objlist = goodsList.stream().map(goods ->
+                {String soldKey=SECKILL_SOLDCOUNT_KEY+goods.getId();
+                    Long count = stringRedisTemplate.opsForValue().increment(soldKey,1);
+                    objectVO.setGoodsId(goods.getId());
+                    objectVO.setTitle(goods.getTitle());
+                    objectVO.setCoverImage(goods.getCoverImage());
+                    objectVO.setOriginalPrice(goods.getOriginalPrice());
+                    objectVO.setSoldCount(count);
+                    objectVO.setSeckillStock(goods.getSeckillStock());
+                    objectVO.setSeckillPrice(goods.getSeckillPrice());
+                    return objectVO;
+                }
+        ).collect(Collectors.toList());
+                vo.setSeckillStartTime(objlist.get(0).getStartTime());
+                vo.setSeckillEndTime(objlist.get(0).getEndTime());
+                    vo.setSeckillGoodsList(objlist);
+        return vo;
+    }
+
+    @Override
+    public void seckill(Long goodsId, SeckillSaleDTO dto) {
+         //这里有新方法 我们需要拿出当前用户的id 然后通过对比我们user的秒杀商品里是否有当前商品
+        Long userId = UserHolder.getUser().getId();
+        if(userId==null){
+            log.error("该用户未登录");
+            throw   new RuntimeException("用户未登录 请先登录");
+        }
+        //限流用redisson的令牌桶
+        // 参数：速率、时间单位、令牌桶最大容量
+// 每秒放行20个，桶最大30
+        RRateLimiter rateLimiter = redissonClient.getRateLimiter(SECKILL_LIMITER+goodsId);
+        boolean b = rateLimiter.trySetRate(RateType.OVERALL, 20, 1, RateIntervalUnit.MILLISECONDS);
+        if(!b){
+            log.error("请求太频繁,请稍后重试");
+            return ;
+        }//取我们需要的key
+        String goodsinfoKey=SECKILL_INFO_KEY+"{" + goodsId + "}";//这是我们取hash里面的值所需要的key
+        String stockKey=SECKILL_STOCK_KEY+"{" + goodsId + "}";//lua脚本我们需要的
+        String seckillStartTimeKey=SECKILL_STARTTIME_KEY+"{" + goodsId + "}";
+        String seckillEndTimeKey=SECKILL_ENDTTIME_KEY+"{" + goodsId + "}";
+        //接下来是lua脚本里面需要的 :分别取商品的用户购买的key以及我们用户的id;
+        String userSetKey= SECKILL_USER_SET_KEY+goodsId;
+        String user=userId.toString();
+
+            //取缓存的东西
+        //取时间
+        Object startTime = stringRedisTemplate.opsForHash().get(goodsinfoKey, seckillStartTimeKey);
+        Object endTime = stringRedisTemplate.opsForHash().get(goodsinfoKey, seckillEndTimeKey);
+        LocalDateTime start = LocalDateTime.parse(startTime.toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime end = LocalDateTime.parse(endTime.toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        //组装我们的秒杀用户集合 和我们的库存 因为lua脚本识别的话用argv
+        List<String> argvs = Arrays.asList(stockKey,userSetKey);
+        //判断时间
+        if(start.isAfter(LocalDateTime.now())){
+                log.error("活动还没开始");
+                return ;
+            }
+            if(end.isBefore(LocalDateTime.now())){
+                log.error("活动已经结束");
+                return ;
+            }
+
+        Long execute = stringRedisTemplate.execute(
+                SECKILL_SCRIPT,
+                argvs
+                , user
+        );
+        if(execute==null){
+            log.error("系统错误,请联系管理员");
+            throw new RuntimeException("系统错误");
+        }
+        if(execute == -1)
+        {
+            log.error("库存不足,无法创造订单");
+            return ;
+        }
+        if(execute == 0){
+            log.error("用户无法重复下单");
+        }
+        SeckillOrderMessage msg = new SeckillOrderMessage();
+        msg.setGoodsId(goodsId);
+        msg.setAddress(dto.getAddress());
+        msg.setMessage(dto.getMsg());
+        msg.setQuantity(dto.getQuantity());
+        msg.setTradeWay(dto.getTradeWay());
+        rabbitTemplate.convertAndSend("order-exchange","order.seckill",msg);
+
+    }
+
+    @Override
+    public void SeckillPreload() {
+
+        List<Goods> list = lambdaQuery().eq(Goods::getIsSeckill, 1).list();
+        List<Long> collect = list.stream().map(Goods::getId).collect(Collectors.toList());
+        List<Goods> goods = goodsMapper.selectByIds(collect);
+        //预热需要三个key
+        for(Goods good:goods){
+            Long goodsId = good.getId();
+            String goodsinfoKey=SECKILL_INFO_KEY+"{" + goodsId + "}";
+            String goodsStockKey=SECKILL_STOCK_KEY+"{" + goodsId + "}";
+            String seckillStartTimeKey=SECKILL_STARTTIME_KEY+"{" + goodsId + "}";
+            String seckillEndTimeKey=SECKILL_ENDTTIME_KEY+"{" + goodsId + "}";
+
+            stringRedisTemplate.opsForHash().put(goodsinfoKey,seckillStartTimeKey,good.getSeckillStart());
+            stringRedisTemplate.opsForHash().put(goodsinfoKey,seckillEndTimeKey,good.getSeckillEnd());
+           Long hour = new Random().nextLong(3);
+            Long expireTime = 24+hour;
+            stringRedisTemplate.expire(goodsinfoKey, Duration.ofHours(expireTime));
+
+            stringRedisTemplate.opsForValue().set(goodsStockKey,good.getSeckillStock().toString());
+        }
+
+
+
+
+
+
+    }
 }
+
