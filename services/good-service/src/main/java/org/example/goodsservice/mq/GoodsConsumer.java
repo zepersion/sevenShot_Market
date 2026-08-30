@@ -95,7 +95,7 @@ public class GoodsConsumer {
             goodsLike.setUserId(Integer.valueOf(userId.toString()));
             goodsLike.setGoodsId(Integer.valueOf(goodsId.toString()));
             goodsLike.setCreateTime(LocalDateTime.now());
-            goodsLikeMapper.insert(goodsLikeMapper.selectById(goodsId));
+            goodsLikeMapper.insert(goodsLike);
             stringRedisTemplate.opsForSet().add(key, JSONUtil.toJsonStr(goodsLike));
 
         } else if (type==0) {
@@ -131,7 +131,7 @@ public class GoodsConsumer {
             goodsFavorite.setUserId(Integer.valueOf(userId.toString()));
             goodsFavorite.setGoodsId(Integer.valueOf(goodsId.toString()));
             goodsFavorite.setCreateTime(LocalDateTime.now());
-            goodsFavoriteMapper.insert(goodsFavoriteMapper.selectById(goodsId));
+            goodsFavoriteMapper.insert(goodsFavorite);
             stringRedisTemplate.opsForSet().add(favoriteKey, JSONUtil.toJsonStr(goodsFavorite));
         } else if (type==0) {
             LambdaQueryWrapper<GoodsFavorite> wrapper = Wrappers.lambdaQuery();
