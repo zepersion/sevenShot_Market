@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/Ai-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/good-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/order-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/seckill-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/src/main/resources" charset="UTF-8" />

@@ -390,7 +390,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         msg.setMessage(dto.getMsg());
         msg.setQuantity(dto.getQuantity());
         msg.setTradeWay(dto.getTradeWay());
-        rabbitTemplate.convertAndSend("order-exchange","order.seckill",msg);
+        msg.setUserId(userId);
+        rabbitTemplate.convertAndSend("seckill-order-exchange","seckill.order",msg);
 
     }
 

@@ -9,7 +9,7 @@ public class SeckillOrderMessage {
     private Integer tradeWay;//交易方式：1面交 2快递
     private String address;//收获地址
     private  String message;//留言
-
+    private Long userId;//当前用户id
 
 
 }

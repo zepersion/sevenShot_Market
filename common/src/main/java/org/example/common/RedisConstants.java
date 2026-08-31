@@ -36,4 +36,12 @@ public class RedisConstants {
     public static final String SECKILL_ENDTTIME_KEY="seckill:endtime:";
     public static final String SECKILL_USER_SET_KEY = "seckill:user:";
     public static final String USER_KEY = "user:";
+
+    // 订单缓存
+    public static final String ORDER_CACHE_KEY = "order:cache:";
+    public static final Long ORDER_CACHE_TTL = 30L; // 30分钟
+    // 订单分布式锁
+    public static final String ORDER_LOCK_KEY = "lock:order:";
+    // 订单号自增序列
+    public static final String ORDER_SEQ_KEY = "order:seq:";
 }
