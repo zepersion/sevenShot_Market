@@ -395,6 +395,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     }
 
+
+
     @Override
     public void SeckillPreload() {
 

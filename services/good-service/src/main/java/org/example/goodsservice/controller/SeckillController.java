@@ -4,9 +4,10 @@ import jakarta.annotation.Resource;
 import org.example.common.Result;
 import org.example.common.dto.SeckillSaleDTO;
 import org.example.common.vo.SeckillGoodsDataVO;
-import org.example.common.vo.SeckillSaleVO;
+import org.example.common.vo.OrderResultVO;
+import org.example.goodsservice.FeignClient.OrderFeignClient;
 import org.example.goodsservice.service.GoodsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 public class SeckillController {
     @Resource
     private GoodsService goodsService;
-
+    @Resource
+    public OrderFeignClient orderFeignClient;
     @GetMapping("/list")
     public Result seckillList(){
         SeckillGoodsDataVO vo= goodsService.seckillList();
@@ -26,5 +28,10 @@ public class SeckillController {
        goodsService.seckill(goodsId,dto);
         return Result.success("秒杀请求已提交");
 
+    }
+    @GetMapping("/result/{orderNo}")
+    public Result seckillResult(@PathVariable Long orderNo){
+        Result orderByid = orderFeignClient.getOrderByid(orderNo);
+        return orderByid;
     }
 }

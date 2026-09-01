@@ -26,4 +26,7 @@ public interface GoodsService {
    void seckill(Long goodsId, SeckillSaleDTO dto);
 
     void SeckillPreload();
+
+
+
 }

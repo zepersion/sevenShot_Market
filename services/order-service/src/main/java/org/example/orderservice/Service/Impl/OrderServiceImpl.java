@@ -1,12 +1,15 @@
 package org.example.orderservice.Service.Impl;
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.Message.OrderDelayMessage;
 import org.example.common.dto.OrdinaryOrderDTO;
 import org.example.common.dto.UserDto;
 import org.example.common.utils.UserHolder;
+import org.example.common.vo.OrderResultVO;
 import org.example.common.vo.OrdinaryOrderVO;
 import org.example.orderservice.Service.OrderService;
 import org.example.orderservice.entity.Order;
@@ -33,12 +36,16 @@ import static org.example.common.RedisConstants.*;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
-
-    private final GoodsMapper goodsMapper;
-    private final RedissonClient redissonClient;
-    private final StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private  GoodsMapper goodsMapper;
+    @Resource
+    private  RedissonClient redissonClient;
+    @Resource
+     private final StringRedisTemplate stringRedisTemplate;
+    @Resource
     private final RabbitTemplate rabbitTemplate;
-
+    @Resource
+    private OrderMapper orderMapper;
     @Override
     public OrdinaryOrderVO createOrder(OrdinaryOrderDTO dto) {
         UserDto user = UserHolder.getUser();
@@ -138,5 +145,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 lock.unlock();
             }
         }
+    }
+
+    @Override
+    public OrderResultVO getOrderByid(Long orderNo) {
+       String key= ORDER_CACHE_KEY + orderNo;
+        Object status = stringRedisTemplate.opsForHash().get(key, "status");
+        Object orderId = stringRedisTemplate.opsForHash().get(key, "orderId");
+        Object failReason = stringRedisTemplate.opsForHash().get(key, "failReason");
+        OrderResultVO vo= new OrderResultVO();
+        if(status == null||orderId==null||failReason==null) {
+            Order order = lambdaQuery().eq(Order::getOrderNo, orderNo).one();
+            if(order==null) {
+                return null;
+            }
+            vo.setOrderNo(orderNo);
+            vo.setStatus(order.getStatus());
+            vo.setOrderId(order.getId());
+            vo.setFailReason(failReason.toString());
+            stringRedisTemplate.opsForHash().delete(key);
+            stringRedisTemplate.opsForHash().put(key, "status", "1");
+            stringRedisTemplate.opsForHash().put(key, "orderId", order.getId());
+            stringRedisTemplate.opsForHash().put(key, "failReason", failReason.toString());
+            return vo;
+        }
+        vo.setOrderNo(orderNo);
+        vo.setFailReason(failReason.toString());
+        vo.setOrderId((Long) orderId);
+        vo.setStatus((Integer) status);
+        return vo;
     }
 }
