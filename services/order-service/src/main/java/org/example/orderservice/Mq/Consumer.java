@@ -8,6 +8,10 @@ import org.example.common.Message.SeckillOrderMessage;
 import org.example.orderservice.entity.Order;
 import org.example.orderservice.mapper.GoodsMapper;
 import org.example.orderservice.mapper.OrderMapper;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -39,7 +43,11 @@ public class Consumer {
     private GoodsMapper goodsMapper;
 
     // ==================== 秒杀异步创建订单 ====================
-    @RabbitListener(queues = "seckill-order-queue")
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "seckill-order-queue"),
+            exchange = @Exchange(name = "seckill-order-exchange", type = ExchangeTypes.DIRECT),
+            key = "seckill.order"
+    ))
     public void createSeckillOrder(SeckillOrderMessage msg, Channel channel, long deliveryTag) throws IOException {
         log.info("收到秒杀订单消息: userId={}, goodsId={}", msg.getUserId(), msg.getGoodsId());
         try {

@@ -12,26 +12,11 @@ import java.util.Map;
 @Configuration
 public class MqConfig {
 
-    // ==================== 秒杀异步下单（普通交换机） ====================
 
-    @Bean
-    public Queue seckillQueue() {
-        return QueueBuilder.durable("seckill-order-queue").build();
-    }
 
-    @Bean
-    public DirectExchange seckillOrderCreateExchange() {
-        return ExchangeBuilder.directExchange("seckill-order-exchange").durable(true).build();
-    }
+    // seckill-order-exchange 和 seckill-order-queue 由 Consumer 的 @QueueBinding 声明
+    // 这里只声明延迟交换机（@QueueBinding 不支持 x-delayed-message 类型）
 
-    @Bean
-    public Binding seckillOrderBinding() {
-        return BindingBuilder.bind(seckillQueue())
-                .to(seckillOrderCreateExchange())
-                .with("seckill.order");
-    }
-
-    // ==================== 秒杀延迟关单（延迟交换机） ====================
 
     @Bean
     public CustomExchange seckillOrderDelayExchange() {
@@ -53,7 +38,7 @@ public class MqConfig {
                 .noargs();
     }
 
-    // ==================== 普通订单延迟关单（延迟交换机） ====================
+
 
     @Bean
     public CustomExchange orderDelayExchange() {
