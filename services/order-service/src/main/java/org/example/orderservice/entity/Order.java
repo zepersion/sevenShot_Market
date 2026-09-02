@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("orders")
+@TableName("order")
 public class Order {
 
     @TableId(type = IdType.ASSIGN_ID)
@@ -19,11 +19,11 @@ public class Order {
 
     private String orderNo;
 
-    private Integer buyerId;
+    private Long buyerId;
 
-    private Integer sellerId;
+    private Long sellerId;
 
-    private Integer goodsId;
+    private Long goodsId;
 
     private String goodsTitle;
 

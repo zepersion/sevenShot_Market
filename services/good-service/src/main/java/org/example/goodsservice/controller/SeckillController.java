@@ -31,7 +31,7 @@ public class SeckillController {
     }
     @GetMapping("/result/{orderNo}")
     public Result seckillResult(@PathVariable Long orderNo){
-        Result orderByid = orderFeignClient.getOrderByid(orderNo);
+        Result orderByid = orderFeignClient.getOrderByOrderNo(orderNo);
         return orderByid;
     }
 }

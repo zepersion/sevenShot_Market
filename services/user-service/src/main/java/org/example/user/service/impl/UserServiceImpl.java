@@ -193,5 +193,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>implements Use
                 .update();
     }
 
+    @Override
+    public User getById(Long id) {
+        User id1 = query().eq("id", id).one();
+        return id1;
+    }
+
 
 }

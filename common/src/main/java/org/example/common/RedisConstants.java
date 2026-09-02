@@ -44,4 +44,10 @@ public class RedisConstants {
     public static final String ORDER_LOCK_KEY = "lock:order:";
     // 订单号自增序列
     public static final String ORDER_SEQ_KEY = "order:seq:";
+    //订单详情key
+    public static final String ORDER_INFO_KEY = "order:info:";
+    public static final String ORDER_GOODS_INFO_KEY="order:goods:info:";
+    public static final String ORDER_GOODS_BUYER_KEY="order:goods:buyer:";
+    public static final String ORDER_GOODS_SELLER_KEY="order:goods:seller:";
+    public static final String ORDER_CACHE_ID_KEY = "order:cache:";
 }

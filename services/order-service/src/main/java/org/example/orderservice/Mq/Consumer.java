@@ -73,9 +73,9 @@ public class Consumer {
             BigDecimal price = (BigDecimal) goods.get("selling_price");
             Order order = new Order();
             order.setOrderNo(orderNo);
-            order.setBuyerId(msg.getUserId().intValue());
-            order.setSellerId(((Number) goods.get("seller_id")).intValue());
-            order.setGoodsId(msg.getGoodsId().intValue());
+            order.setBuyerId(msg.getUserId());
+            order.setSellerId((Long) goods.get("seller_id"));
+            order.setGoodsId( msg.getGoodsId());
             order.setGoodsTitle((String) goods.get("title"));
             order.setGoodsImage((String) goods.get("cover_image"));
             order.setGoodsPrice(price);
@@ -92,7 +92,7 @@ public class Consumer {
 
             // 更新商品状态和库存
             goodsMapper.updateStatus(msg.getGoodsId(), 2);
-            goodsMapper.updateStock1(msg.getGoodsId());
+            goodsMapper.updateSeckillStock1(msg.getGoodsId());
 
             // Redis 缓存订单
             Map<String, String> cacheMap = new HashMap<>();
@@ -120,7 +120,7 @@ public class Consumer {
         }
     }
 
-    // ==================== 秒杀延迟关单 ====================
+
     @RabbitListener(queues = "seckill-order-delay-queue")
     public void listenSeckillDelayOrder(OrderDelayMessage message, Channel channel, long deliveryTag) throws IOException {
         try {
@@ -151,7 +151,7 @@ public class Consumer {
                 updateOrder.setUpdateTime(LocalDateTime.now());
                 orderMapper.updateById(updateOrder);
                 // 恢复秒杀库存
-                goodsMapper.updateStock(message.getGoodsId());
+                goodsMapper.updateSeckillStock(message.getGoodsId());
                 // 商品状态恢复为秒杀中(4)
                 goodsMapper.updateStatus(message.getGoodsId(), 4);
                 // 清除订单缓存
@@ -164,7 +164,7 @@ public class Consumer {
         }
     }
 
-    // ==================== 普通订单延迟关单 ====================
+
     @RabbitListener(queues = "order-delay-queue")
     public void listenOrdinaryDelayOrder(OrderDelayMessage message, Channel channel, long deliveryTag) throws IOException {
         try {

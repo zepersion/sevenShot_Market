@@ -1,11 +1,13 @@
 package org.example.user.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.example.common.Result;
 import org.example.common.dto.*;
 import org.example.common.vo.*;
+import org.example.user.entity.User;
 import org.example.user.entity.UserCredit;
 import org.example.user.entity.UserFollow;
 import org.example.user.mapper.UserMapper;
@@ -104,5 +106,12 @@ public class UserController {
         Long id = UserHolder.getUser().getId();
         PageVO<UserCredit> vo=userCreditService.getCreditRecords(page,size,id);
         return Result.success("vo","success");
+    }
+    @GetMapping("/{id}")
+    public Result<UserDto> getUserById(@PathVariable Long id) {
+        User user = userService.getById(id);
+        if (user == null) return Result.error("用户不存在");
+        UserDto dto = BeanUtil.copyProperties(user, UserDto.class);
+        return Result.success(dto);
     }
 }
