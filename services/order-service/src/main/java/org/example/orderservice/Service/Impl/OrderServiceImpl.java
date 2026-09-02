@@ -385,6 +385,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderStatusLogMapper.insert(log);
 
         stringRedisTemplate.delete(ORDER_CACHE_KEY + order.getOrderNo());
+        stringRedisTemplate.delete( ORDER_INFO_KEY+order.getId());
     }
 
     private String setStatusName(Integer status) {
