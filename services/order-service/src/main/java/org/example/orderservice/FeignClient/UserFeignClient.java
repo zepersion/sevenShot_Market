@@ -10,4 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UserFeignClient {
     @GetMapping("/{id}")
     Result<UserDto> getUserById(@PathVariable Long id);
+
+    @GetMapping("/credit/{id}/{score}")
+    Result updateCredit(@PathVariable("id") Long id, @PathVariable("score") Integer score);
 }

@@ -107,6 +107,11 @@ public class UserController {
         PageVO<UserCredit> vo=userCreditService.getCreditRecords(page,size,id);
         return Result.success("vo","success");
     }
+    @GetMapping("/credit/{id}/{score}")
+    public Result updateCredit(@PathVariable Long id, @PathVariable Integer score) {
+        userCreditService.updateCredit(id, score);
+        return Result.success();
+    }
     @GetMapping("/{id}")
     public Result<UserDto> getUserById(@PathVariable Long id) {
         User user = userService.getById(id);

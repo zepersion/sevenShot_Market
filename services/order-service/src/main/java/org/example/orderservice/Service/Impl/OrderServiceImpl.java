@@ -2,6 +2,7 @@ package org.example.orderservice.Service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,23 +11,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.common.Message.OrderCompleteMessage;
 import org.example.common.Message.OrderDelayMessage;
 import org.example.common.Result;
+import org.example.common.dto.AfterSaleApplyDTO;
 import org.example.common.dto.OrdinaryOrderDTO;
 import org.example.common.dto.UserDto;
 import org.example.common.utils.UserHolder;
+import org.example.common.vo.*;
 import org.example.common.vo.OrderDetailVO.BuyerVO;
 import org.example.common.vo.OrderDetailVO.DetailOrderVO;
 import org.example.common.vo.OrderDetailVO.OrderGoodsVO;
 import org.example.common.vo.OrderDetailVO.SellerVO;
-import org.example.common.vo.OrderListVO;
-import org.example.common.vo.OrderResultVO;
-import org.example.common.vo.OrdinaryOrderVO;
-import org.example.common.vo.PageVO;
 import org.example.orderservice.FeignClient.UserFeignClient;
 import org.example.orderservice.Service.OrderService;
 import org.example.orderservice.entity.Order;
 import org.example.orderservice.entity.OrderStatusLog;
+import org.example.orderservice.mapper.AfterSaleMapper;
 import org.example.orderservice.mapper.GoodsMapper;
 import org.example.orderservice.mapper.OrderMapper;
 import org.example.orderservice.mapper.OrderStatusLogMapper;
@@ -35,6 +36,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -69,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private UserFeignClient userFeignClient;
     @Resource
     private OrderStatusLogMapper orderStatusLogMapper;
+    @Resource
+    private AfterSaleMapper afterSaleMapper;
     @Override
     public OrdinaryOrderVO createOrder(OrdinaryOrderDTO dto) {
         UserDto user = UserHolder.getUser();
@@ -339,7 +343,155 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             pageVo.setCurrent(orderPage.getCurrent());
             return pageVo;
     }
+@Transactional
+    @Override
+    public void pay(Long id, Integer payType) {
+        Long userId = UserHolder.getUser().getId();
+        Order order = query().eq("id", id).one();
+        if(order==null){
+            log.error("id为{}的订单不存在", id);
+            return;
+        }
+        if (!order.getBuyerId().equals(userId)) {
+            throw new RuntimeException("无权支付他人订单");
+        }
+        if(order.getStatus()>=1){
+            throw new RuntimeException("用户已支付");
+        }
+        LambdaUpdateChainWrapper<Order> updateStatus = lambdaUpdate().eq(Order::getId, id)
+                .eq(Order::getStatus, 0)
+                .set(Order::getStatus, 1)
+                .set(Order::getPayStatus, payType)
+                .set(Order::getPayTime, LocalDateTime.now());
+        //乐观锁判断
+        int updateCount = orderMapper.update(null, updateStatus);
+        if(updateCount==0){
+            throw new RuntimeException("订单出现问题,请联系客服");
+        }
 
+        if(payType==1){
+            //微信支付接口
+            /// /
+        log.info("微信支付已成功");
+        }
+        if(payType==2){
+            log.info("支付宝支付已完成");
+
+        }
+        if(payType==3){
+            log.info("余额支付已成功");
+
+        }
+        OrderStatusLog log = new OrderStatusLog();
+        log.setOrderId(id);
+        log.setBefore_status(0);
+        log.setAfter_status(1);
+        log.setOperator_type(1);      // 1=买家
+        log.setOperator_id(userId.intValue());
+        log.setRemark("已支付,请等待发货" );
+        log.setCreate_time(LocalDateTime.now());
+        orderStatusLogMapper.insert(log);
+
+        stringRedisTemplate.delete(ORDER_CACHE_KEY + order.getOrderNo());
+        stringRedisTemplate.delete( ORDER_INFO_KEY+order.getId());
+
+
+
+    }
+
+    @Override
+    public void deliver(Long id) {
+        Long userId = UserHolder.getUser().getId();
+        Order order = query().eq("id", id).one();
+        if(order==null){
+            log.error("id为{}的订单不存在", id);
+            return;
+        }
+        if (!order.getSellerId().equals(userId)) {
+            throw new RuntimeException("无权操作，只有卖家可发货");
+        }
+        if(order.getStatus()!=1){
+            throw new RuntimeException("卖家状态不支持发货");
+        }
+        LambdaUpdateChainWrapper<Order> updateStatus = lambdaUpdate().eq(Order::getId, id)
+                .eq(Order::getStatus, 1)
+                .set(Order::getStatus, 2)
+                .set(Order::getDeliverTime, LocalDateTime.now())
+                ;
+        //乐观锁判断
+        int updateCount = orderMapper.update(null, updateStatus);
+        if(updateCount==0){
+            throw new RuntimeException("订单出现问题,请联系客服");
+        }
+        OrderStatusLog log = new OrderStatusLog();
+        log.setOrderId(id);
+        log.setBefore_status(1);
+        log.setAfter_status(2);
+        log.setOperator_type(2);      // 2=卖家
+        log.setOperator_id(userId.intValue());
+        log.setRemark("已发货" );
+        log.setCreate_time(LocalDateTime.now());
+        orderStatusLogMapper.insert(log);
+
+        stringRedisTemplate.delete(ORDER_CACHE_KEY + order.getOrderNo());
+        stringRedisTemplate.delete( ORDER_INFO_KEY+order.getId());
+
+
+    }
+
+    @Transactional
+    @Override
+    public void receive(Long id) {
+        Long userId = UserHolder.getUser().getId();
+        Order order = query().eq("id", id).one();
+        if(order==null){
+            log.error("id为{}的订单不存在", id);
+            return;
+        }
+        if (!order.getBuyerId().equals(userId)) {
+            throw new RuntimeException("无权操作");
+        }
+        if(order.getStatus()!=2){
+            throw new RuntimeException("订单状态不支持确认收货");
+        }
+        LambdaUpdateChainWrapper<Order> updateStatus = lambdaUpdate().eq(Order::getId, id)
+                .eq(Order::getStatus, 2)
+                .set(Order::getStatus, 3)
+                .set(Order::getReceiveTime, LocalDateTime.now())
+                ;
+        //乐观锁判断
+        int updateCount = orderMapper.update(null, updateStatus);
+        if(updateCount==0){
+            throw new RuntimeException("订单出现问题,请联系客服");
+        }
+        OrderStatusLog log = new OrderStatusLog();
+        log.setOrderId(id);
+        log.setBefore_status(2);
+        log.setAfter_status(3);
+        log.setOperator_type(1);      // 1=买家
+        log.setOperator_id(userId.intValue());
+        log.setRemark("确认收货" );
+        log.setCreate_time(LocalDateTime.now());
+        orderStatusLogMapper.insert(log);
+
+        stringRedisTemplate.delete(ORDER_CACHE_KEY + order.getOrderNo());
+        stringRedisTemplate.delete( ORDER_INFO_KEY+order.getId());
+
+        // 发送订单完成消息到MQ，触发异步处理（信用分更新、通知推送、商品标记已售）
+        OrderCompleteMessage msg = new OrderCompleteMessage();
+        msg.setOrderId(id);
+        msg.setSellerId(order.getSellerId());
+        msg.setBuyerId(order.getBuyerId());
+        msg.setGoodsId(order.getGoodsId());
+        rabbitTemplate.convertAndSend("order.complete.exchange", "credit", msg);
+        rabbitTemplate.convertAndSend("order.complete.exchange", "notify", msg);
+        rabbitTemplate.convertAndSend("order.complete.exchange", "goods.sold", msg);
+
+    }
+
+
+
+    @Transactional
     @Override
     public void cancel(Long id, String reason) {
         Long userId = UserHolder.getUser().getId();

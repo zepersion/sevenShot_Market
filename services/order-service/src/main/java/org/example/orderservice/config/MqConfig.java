@@ -60,6 +60,46 @@ public class MqConfig {
                 .noargs();
     }
 
+    // ==================== 订单完成异步处理 ====================
+
+    @Bean
+    public DirectExchange orderCompleteExchange() {
+        return new DirectExchange("order.complete.exchange", true, false);
+    }
+
+    @Bean
+    public Queue creditQueue() {
+        return QueueBuilder.durable("order.credit.queue").build();
+    }
+
+    @Bean
+    public Queue notifyQueue() {
+        return QueueBuilder.durable("order.notify.queue").build();
+    }
+
+    @Bean
+    public Queue goodsSoldQueue() {
+        return QueueBuilder.durable("order.goods.sold.queue").build();
+    }
+
+    @Bean
+    public Binding creditBinding() {
+        return BindingBuilder.bind(creditQueue())
+                .to(orderCompleteExchange()).with("credit");
+    }
+
+    @Bean
+    public Binding notifyBinding() {
+        return BindingBuilder.bind(notifyQueue())
+                .to(orderCompleteExchange()).with("notify");
+    }
+
+    @Bean
+    public Binding goodsSoldBinding() {
+        return BindingBuilder.bind(goodsSoldQueue())
+                .to(orderCompleteExchange()).with("goods.sold");
+    }
+
     // ==================== JSON 消息转换器 ====================
 
     @Bean
