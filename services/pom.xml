@@ -18,6 +18,7 @@
         <module>user-service</module>
         <module>good-service</module>
         <module>order-service</module>
+        <module>reward-service</module>
     </modules>
 
 </project>
