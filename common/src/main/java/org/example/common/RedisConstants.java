@@ -50,4 +50,14 @@ public class RedisConstants {
     public static final String ORDER_GOODS_BUYER_KEY="order:goods:buyer:";
     public static final String ORDER_GOODS_SELLER_KEY="order:goods:seller:";
     public static final String ORDER_CACHE_ID_KEY = "order:cache:";
+
+    // 悬赏浏览量
+    public static final String REWARD_VIEW_KEY = "reward:view:";
+    public static final String REWARD_VIEW_USER_KEY = "reward:view:user:";
+    // 悬赏分布式锁
+    public static final String REWARD_LOCK_KEY = "lock:reward:";
+    // 悬赏缓存
+    public static final String REWARD_INFO_KEY = "reward:info:";
+    public static final Long REWARD_INFO_TTL = 30L;
 }
+

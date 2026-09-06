@@ -9,35 +9,39 @@ import java.util.List;
 @Data
 public class RewardVO {
 
-    private Long id;
+    private Long taskId;
 
-    private Long publisherId;
+    private Long taskPublisherId;
 
-    private String title;
+    private String taskTitle;
 
-    private String description;
+    private String taskDescription;
 
-    private BigDecimal rewardAmount;
+    private BigDecimal taskAmount;
 
     private Integer categoryId;
 
-    private String coverImage;
+    private String taskCover;
 
-    private List<String> images;
+    private List<String> taskImages;
 
-    private LocalDateTime deadline;
+    private LocalDateTime taskDeadline;
 
-    private Integer status;
+    private String taskAddress;
 
-    private String statusName;
+    private String taskContact;
 
-    private Long acceptorId;
+    private Integer taskStatus;
 
-    private LocalDateTime acceptTime;
+    private String taskStatusName;
 
-    private LocalDateTime completeTime;
+    private Long taskReceiverId;
 
-    private Integer viewCount;
+    private LocalDateTime taskAcceptTime;
 
-    private LocalDateTime createTime;
+    private LocalDateTime taskCompleteTime;
+
+    private Integer taskViews;
+
+    private LocalDateTime taskCreateTime;
 }

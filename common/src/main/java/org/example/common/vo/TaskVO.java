@@ -1,7 +1,5 @@
-package org.example.common.dto;
+package org.example.common.vo;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -9,14 +7,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class RewardPublishDTO {
+public class TaskVO {
 
-    @NotBlank(message = "任务标题不能为空")
+    private Long taskId;
+
+    private Long taskPublisherId;
+
     private String taskTitle;
 
     private String taskDescription;
 
-    @NotNull(message = "赏金不能为空")
     private BigDecimal taskAmount;
 
     private Integer categoryId;
@@ -30,4 +30,18 @@ public class RewardPublishDTO {
     private String taskAddress;
 
     private String taskContact;
+
+    private Integer taskStatus;
+
+    private String taskStatusName;
+
+    private Long taskReceiverId;
+
+    private LocalDateTime taskAcceptTime;
+
+    private LocalDateTime taskCompleteTime;
+
+    private Integer taskViews;
+
+    private LocalDateTime taskCreateTime;
 }

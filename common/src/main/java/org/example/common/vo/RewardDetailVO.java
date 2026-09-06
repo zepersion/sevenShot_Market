@@ -1,21 +1,19 @@
-package org.example.rewardservice.entity;
+package org.example.common.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-@TableName("reward")
-public class Reward {
+public class RewardDetailVO {
 
-    @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long taskPublisherId;
+    private Long publisherId;
+
+    private String publisherName;
 
     private String title;
 
@@ -25,15 +23,21 @@ public class Reward {
 
     private Integer categoryId;
 
+    private String categoryName;
+
     private String coverImage;
 
-    private String images;
+    private List<String> images;
 
     private LocalDateTime deadline;
 
     private Integer status;
 
-    private Long taskReceiverId;
+    private String statusName;
+
+    private Long acceptorId;
+
+    private String acceptorName;
 
     private LocalDateTime acceptTime;
 
