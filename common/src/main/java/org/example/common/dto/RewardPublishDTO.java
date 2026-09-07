@@ -6,28 +6,23 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class RewardPublishDTO {
 
     @NotBlank(message = "任务标题不能为空")
-    private String taskTitle;
+    private String title;
 
-    private String taskDescription;
+    private String description;
 
     @NotNull(message = "赏金不能为空")
-    private BigDecimal taskAmount;
+    private BigDecimal reward;
 
-    private Integer categoryId;
+    private Long categoryId;
 
-    private String taskCover;
+    private String location;
 
-    private List<String> taskImages;
+    private LocalDateTime deadline;
 
-    private LocalDateTime taskDeadline;
-
-    private String taskAddress;
-
-    private String taskContact;
+    private String tags;
 }

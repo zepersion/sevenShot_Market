@@ -17,4 +17,6 @@ public interface RewardService extends IService<Reward> {
     PageVO<RewardVO> rewardList(Long id, TaskListDTO dto);
 
     RewardDetailVO detail(Long id);
+
+    void apply(Long id, String msg);
 }

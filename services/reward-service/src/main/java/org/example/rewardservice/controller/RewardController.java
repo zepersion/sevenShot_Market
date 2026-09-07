@@ -39,4 +39,10 @@ public class RewardController {
         RewardDetailVO vo = rewardService.detail(id);
         return Result.success(vo);
     }
+    //5.4
+    @PostMapping("/apply/{id}")
+    public Result apply(@PathVariable Long id,@RequestBody String msg){
+        rewardService.apply(id,msg);
+        return Result.success();
+    }
 }

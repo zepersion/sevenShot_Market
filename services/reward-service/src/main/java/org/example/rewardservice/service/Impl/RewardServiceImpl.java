@@ -14,7 +14,9 @@ import org.example.common.vo.RewardDetailVO;
 import org.example.common.vo.RewardVO;
 import org.example.rewardservice.Task.DetailTask;
 import org.example.rewardservice.entity.Reward;
+import org.example.rewardservice.entity.TaskAccept;
 import org.example.rewardservice.mapper.RewardMapper;
+import org.example.rewardservice.mapper.TaskAcceptMapper;
 import org.example.rewardservice.service.RewardService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -41,7 +43,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
-    private DetailTask detailTask;
+    private TaskAcceptMapper taskAcceptMapper;
     @Override
     public RewardVO publish(RewardPublishDTO dto) {
         //拿到发布者:用户id
@@ -53,21 +55,17 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         }
         Reward reward = new Reward();
         BeanUtils.copyProperties(dto, reward);
-        reward.setTaskPublisherId(id);
+        reward.setPublisherId(id);
         reward.setStatus(0);  // 待接单
         reward.setViewCount(0);
         reward.setCreateTime(LocalDateTime.now());
         reward.setUpdateTime(LocalDateTime.now());
-        if (dto.getTaskImages() != null && !dto.getTaskImages().isEmpty()) {
-            reward.setImages(String.join(",", dto.getTaskImages()));
-        }
+
       save(reward);
       RewardVO vo = new RewardVO();
       BeanUtils.copyProperties(reward, vo);
-        if (reward.getImages() != null && !reward.getImages().isBlank()) {
-            vo.setTaskImages(Arrays.asList(reward.getImages().split(",")));
-        }
-        vo.setTaskStatusName("待接单");
+
+
         return vo;
     }
 
@@ -75,21 +73,21 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     public PageVO<RewardVO> rewardList(Long id, TaskListDTO dto) {
         Page<Reward> rewardPage = new Page<Reward>(dto.getPage(),dto.getSize());
         LambdaQueryWrapper<Reward> query = new LambdaQueryWrapper<>();
-        query.eq(id!=null,Reward::getTaskPublisherId, id)
+        query.eq(id!=null,Reward::getPublisherId, id)
                 .eq(Reward::getStatus, 0)
                 .and(dto.getKeyWord()!=null,wrapper->{
-                    wrapper.eq(Reward::getTaskPublisherId, id)
+                    wrapper.eq(Reward::getPublisherId, id)
                             .like(Reward::getTitle, dto.getKeyWord())
                             .or().like(Reward::getDescription, dto.getKeyWord());
-                }).le(dto.getMinReward()!=null,Reward::getRewardAmount,dto.getMinReward())
-                .ge(dto.getMaxReward()!=null,Reward::getRewardAmount,dto.getMaxReward())
+                }).le(dto.getMinReward()!=null,Reward::getReward,dto.getMinReward())
+                .ge(dto.getMaxReward()!=null,Reward::getReward,dto.getMaxReward())
                 .eq(dto.getTaskId()!=null,Reward::getId,dto.getTaskId())
                 .eq(dto.getCategoryId()!=null,Reward::getCategoryId,dto.getCategoryId());
         if (dto.getSortType() != null) {
             if (dto.getSortType() == 1) {
-                query.orderByDesc(Reward::getRewardAmount);    // 赏金从高到低
+                query.orderByDesc(Reward::getReward);    // 赏金从高到低
             } else if (dto.getSortType() == 2) {
-                query.orderByAsc(Reward::getRewardAmount);     // 赏金从低到高
+                query.orderByAsc(Reward::getReward);     // 赏金从低到高
             } else if (dto.getSortType() == 3) {
                query.orderByAsc(Reward::getCreateTime);// 最新发布
             }
@@ -138,13 +136,38 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         Reward reward = rewardMapper.selectById(id);
         RewardDetailVO vo = new RewardDetailVO();
         BeanUtils.copyProperties(reward, vo);
-        if (reward.getImages() != null && !reward.getImages().isBlank()) {
-            vo.setImages(Arrays.asList(reward.getImages().split(",")));
-        }
+
         vo.setStatusName(getStatusName(reward.getStatus()));
         return vo;
 
     }
+    @Transactional
+    @Override
+    public void apply(Long id, String msg) {
+        Long accepthId = UserHolder.getUser().getId();
+  //publishid 不能和申请id一致
+        Reward task = lambdaQuery().eq(Reward::getId, id).one();
+        if(task==null||task.getPublisherId()!=accepthId){
+            throw new RuntimeException("该悬赏任务有误");
+        }
+       LambdaQueryWrapper<TaskAccept> taskAcceptQuery = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<TaskAccept> one= taskAcceptQuery.eq(TaskAccept::getTaskId, task.getId())
+                .eq(TaskAccept::getAcceptorId, accepthId);
+        TaskAccept taskAccept = taskAcceptMapper.selectOne(one);
+        if(taskAccept!=null){
+            throw new RuntimeException("已经申请过该任务");
+        }
+        TaskAccept acceptstatus = new TaskAccept();
+        acceptstatus.setTaskId(task.getId());
+        acceptstatus.setAcceptorId(accepthId);
+        acceptstatus.setStatus(0);
+        acceptstatus.setCreateTime(LocalDateTime.now());
+        acceptstatus.setMessage(msg);
+        taskAcceptMapper.insert(acceptstatus);
+
+
+    }
+
     private String getStatusName(Integer status) {
         return switch (status) {
             case 0 -> "待接单";
@@ -154,5 +177,9 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
             default -> "未知";
         };
     }
+
+
+
+
 
 }

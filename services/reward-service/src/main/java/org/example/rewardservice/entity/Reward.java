@@ -9,39 +9,41 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("reward")
+@TableName("task")
 public class Reward {
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long taskPublisherId;
+    private Long publisherId;
+
+    private Long acceptorId;
+
+    private Long categoryId;
 
     private String title;
 
     private String description;
 
-    private BigDecimal rewardAmount;
+    private BigDecimal reward;
 
-    private Integer categoryId;
-
-    private String coverImage;
-
-    private String images;
+    private String location;
 
     private LocalDateTime deadline;
 
     private Integer status;
 
-    private Long taskReceiverId;
-
-    private LocalDateTime acceptTime;
-
-    private LocalDateTime completeTime;
+    private String tags;
 
     private Integer viewCount;
 
+    private Integer hotScore;
+
     private LocalDateTime createTime;
+
+    private LocalDateTime acceptTime;
+
+    private LocalDateTime finishTime;
 
     private LocalDateTime updateTime;
 }

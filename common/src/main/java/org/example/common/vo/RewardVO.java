@@ -4,44 +4,43 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class RewardVO {
 
-    private Long taskId;
+    private Long id;
 
-    private Long taskPublisherId;
+    private Long publisherId;
 
-    private String taskTitle;
+    private Long acceptorId;
 
-    private String taskDescription;
+    private Long categoryId;
 
-    private BigDecimal taskAmount;
+    private String title;
 
-    private Integer categoryId;
+    private String description;
 
-    private String taskCover;
+    private BigDecimal reward;
 
-    private List<String> taskImages;
+    private String location;
 
-    private LocalDateTime taskDeadline;
+    private LocalDateTime deadline;
 
-    private String taskAddress;
+    private Integer status;
 
-    private String taskContact;
+    private String statusName;
 
-    private Integer taskStatus;
+    private String tags;
 
-    private String taskStatusName;
+    private Integer viewCount;
 
-    private Long taskReceiverId;
+    private Integer hotScore;
 
-    private LocalDateTime taskAcceptTime;
+    private LocalDateTime createTime;
 
-    private LocalDateTime taskCompleteTime;
+    private LocalDateTime acceptTime;
 
-    private Integer taskViews;
+    private LocalDateTime finishTime;
 
-    private LocalDateTime taskCreateTime;
+    private LocalDateTime updateTime;
 }

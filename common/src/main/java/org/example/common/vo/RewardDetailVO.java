@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class RewardDetailVO {
@@ -15,19 +14,21 @@ public class RewardDetailVO {
 
     private String publisherName;
 
+    private Long acceptorId;
+
+    private String acceptorName;
+
+    private Long categoryId;
+
+    private String categoryName;
+
     private String title;
 
     private String description;
 
-    private BigDecimal rewardAmount;
+    private BigDecimal reward;
 
-    private Integer categoryId;
-
-    private String categoryName;
-
-    private String coverImage;
-
-    private List<String> images;
+    private String location;
 
     private LocalDateTime deadline;
 
@@ -35,17 +36,17 @@ public class RewardDetailVO {
 
     private String statusName;
 
-    private Long acceptorId;
-
-    private String acceptorName;
-
-    private LocalDateTime acceptTime;
-
-    private LocalDateTime completeTime;
+    private String tags;
 
     private Integer viewCount;
 
+    private Integer hotScore;
+
     private LocalDateTime createTime;
+
+    private LocalDateTime acceptTime;
+
+    private LocalDateTime finishTime;
 
     private LocalDateTime updateTime;
 }
