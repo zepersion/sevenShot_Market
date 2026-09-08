@@ -52,4 +52,18 @@ public class RewardController {
         rewardService.selectBytakeId(taskId,acceptId);
         return Result.success();
     }
+    //5.6
+    @GetMapping("/my/publish")
+    public Result myPublish(TaskListDTO dto){
+        Long id = UserHolder.getUser().getId();
+        PageVO<RewardVO> vo=rewardService.myPublishList(id, dto);
+        return Result.success(vo);
+    }
+    //5.7
+    @GetMapping("/my/accept")
+    public Result myAccept(TaskListDTO dto){
+        Long id = UserHolder.getUser().getId();
+        PageVO<RewardVO> vo=rewardService.myAcceptList(id, dto);
+        return Result.success(vo);
+    }
 }

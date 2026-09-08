@@ -16,10 +16,15 @@ public interface RewardService extends IService<Reward> {
 
     PageVO<RewardVO> rewardList(Long id, TaskListDTO dto);
 
+
+
     RewardDetailVO detail(Long id);
 
     void apply(Long id, String msg);
 
     void selectBytakeId(Long taskId, Long acceptId);
 
+    PageVO<RewardVO> myPublishList(Long userId, TaskListDTO dto);
+
+    PageVO<RewardVO> myAcceptList(Long userId, TaskListDTO dto);
 }

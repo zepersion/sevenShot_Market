@@ -1,8 +1,10 @@
 package org.example.rewardservice.service.Impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.ObjectMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -121,9 +124,9 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         Page<Reward> rewardPage = new Page<Reward>(dto.getPage(),dto.getSize());
         LambdaQueryWrapper<Reward> query = new LambdaQueryWrapper<>();
         query.eq(Reward::getStatus, 1)
+                .eq(id != null, Reward::getPublisherId, id)
                 .and(dto.getKeyWord()!=null,wrapper->{
-                    wrapper.eq(Reward::getPublisherId, id)
-                            .like(Reward::getTitle, dto.getKeyWord())
+                    wrapper.like(Reward::getTitle, dto.getKeyWord())
                             .or().like(Reward::getDescription, dto.getKeyWord());
                 }).le(dto.getMinReward()!=null,Reward::getReward,dto.getMinReward())
                 .ge(dto.getMaxReward()!=null,Reward::getReward,dto.getMaxReward())
@@ -217,6 +220,95 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         acceptstatus.setMessage(msg);
         taskAcceptMapper.insert(acceptstatus);
 
+
+    }
+
+
+    @Override
+    public PageVO<RewardVO> myPublishList(Long userId, TaskListDTO dto) {
+        Integer page = dto.getPage() != null ? dto.getPage() : 1;
+        Integer size = dto.getSize() != null ? dto.getSize() : 10;
+        Page<Reward> pages = new Page<>(page, size);
+        LambdaQueryWrapper<Reward> query = new LambdaQueryWrapper<>();
+        query.eq(Reward::getPublisherId, userId)
+                .and(dto.getKeyWord() != null, wrapper -> {
+                    wrapper.like(Reward::getTitle, dto.getKeyWord())
+                            .or().like(Reward::getDescription, dto.getKeyWord());
+                })
+                .le(dto.getMinReward() != null, Reward::getReward, dto.getMinReward())
+                .ge(dto.getMaxReward() != null, Reward::getReward, dto.getMaxReward())
+                .eq(dto.getCategoryId() != null, Reward::getCategoryId, dto.getCategoryId());
+        if (dto.getSortType() != null) {
+            if (dto.getSortType() == 1) {
+                query.orderByDesc(Reward::getReward);
+            } else if (dto.getSortType() == 2) {
+                query.orderByAsc(Reward::getReward);
+            } else if (dto.getSortType() == 3) {
+                query.orderByAsc(Reward::getCreateTime);
+            }
+        } else {
+            query.orderByDesc(Reward::getCreateTime);
+        }
+        Page<Reward> rewardPage = rewardMapper.selectPage(pages, query);
+        List<RewardVO> collect = rewardPage.getRecords().stream().map(r -> {
+            RewardVO vo = new RewardVO();
+            BeanUtils.copyProperties(r, vo);
+            return vo;
+        }).collect(Collectors.toList());
+        PageVO<RewardVO> vo = new PageVO<>();
+        vo.setTotal(rewardPage.getTotal());
+        vo.setRecords(collect);
+        vo.setSize(rewardPage.getSize());
+        vo.setPages(rewardPage.getPages());
+        vo.setCurrent(rewardPage.getCurrent());
+        return vo;
+    }
+
+    @Override
+    public PageVO<RewardVO> myAcceptList(Long userId, TaskListDTO dto) {
+        Integer page = dto.getPage() != null ? dto.getPage() : 1;
+        Integer size = dto.getSize() != null ? dto.getSize() : 10;
+
+
+        Page<Reward> pages = new Page<>(page, size);
+        //从accept拿数据
+        LambdaQueryWrapper<TaskAccept> accepterQuery = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<TaskAccept> accepters = accepterQuery.eq(TaskAccept::getAcceptorId, userId);
+        List<TaskAccept> taskAccepts = taskAcceptMapper.selectList(accepters);
+        //判断如果为空 返回空集合
+        if(BeanUtil.isEmpty(taskAccepts)){
+            PageVO<RewardVO> vo = new PageVO<>();
+            vo.setCurrent(0L);
+            vo.setSize(0L);
+            vo.setTotal(0L);
+            vo.setRecords(Collections.emptyList());
+            return vo;
+        }
+        //根据这些资料通过taskid查询Reward表
+        List<Long> ids = taskAccepts.stream().map(TaskAccept::getTaskId).toList();
+            //
+        Page<Reward> pageEnity = this.lambdaQuery().in(Reward::getId, ids)
+                .like(Reward::getTitle, dto.getKeyWord())
+                .like(Reward::getDescription, dto.getKeyWord())
+                .like(Reward::getReward, dto.getKeyWord())
+                .like(Reward::getCategoryId, dto.getCategoryId())
+                .orderByDesc(Reward::getCreateTime)
+                .page(new Page<>(page, size));//条件
+        //拿出RewardVO的集合
+        List<RewardVO> collect = pageEnity.getRecords().stream().map(reward -> {
+            RewardVO vo = new RewardVO();
+            BeanUtils.copyProperties(reward, vo);
+            return vo;
+        }).collect(Collectors.toList());
+
+    // 拼接vo
+        PageVO<RewardVO> vo = new PageVO<>();
+        vo.setTotal(pageEnity.getTotal());
+        vo.setRecords(collect);
+        vo.setSize(pageEnity.getSize());
+        vo.setPages(pageEnity.getPages());
+        vo.setCurrent(pageEnity.getCurrent());
+        return vo;
 
     }
 
