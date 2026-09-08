@@ -4,22 +4,24 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.ObjectMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.example.common.dto.PointsDTO;
 import org.example.common.dto.RewardPublishDTO;
 import org.example.common.dto.TaskListDTO;
 import org.example.common.utils.UserHolder;
 import org.example.common.vo.PageVO;
+import org.example.common.vo.PointsVO;
 import org.example.common.vo.RewardDetailVO;
 import org.example.common.vo.RewardVO;
-import org.example.rewardservice.Task.DetailTask;
 import org.example.rewardservice.entity.Reward;
 import org.example.rewardservice.entity.TaskAccept;
+import org.example.rewardservice.entity.TaskPointsRecord;
 import org.example.rewardservice.mapper.RewardMapper;
 import org.example.rewardservice.mapper.TaskAcceptMapper;
+import org.example.rewardservice.mapper.TaskPointsRecordMapper;
 import org.example.rewardservice.service.RewardService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +49,8 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private TaskAcceptMapper taskAcceptMapper;
+    @Resource
+    private TaskPointsRecordMapper taskPointsRecordMapper;
     @Transactional
     @Override
     public void selectBytakeId(Long taskId, Long acceptId) {
@@ -311,6 +313,44 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         return vo;
 
     }
+
+    @Override
+    public PageVO<PointsVO> points(PointsDTO dto, Long userId) {
+        Integer page = dto.getPage() != null ? dto.getPage() : 1;
+        Integer size = dto.getSize() != null ? dto.getSize() : 10;
+
+
+        LambdaQueryWrapper<TaskPointsRecord> pointsQuery = new LambdaQueryWrapper<>();
+      pointsQuery.eq(TaskPointsRecord::getUserId, userId)
+              .orderByDesc(TaskPointsRecord::getCreateTime);
+
+      if(dto.getType()!=null){
+          pointsQuery.eq(TaskPointsRecord::getType, dto.getType());
+      }
+        pointsQuery.orderByDesc(TaskPointsRecord::getCreateTime);
+        Page<TaskPointsRecord> pages = new Page<>(page, size);
+        Page<TaskPointsRecord> recordPage = taskPointsRecordMapper.selectPage(pages, pointsQuery);
+
+
+        List<PointsVO> voList = recordPage.getRecords().stream().map(record -> {
+            PointsVO vo = new PointsVO();
+
+            BeanUtils.copyProperties(record, vo);
+
+            return vo;
+        }).collect(Collectors.toList());
+        PageVO<PointsVO> result = new PageVO<>();
+        result.setPages(recordPage.getPages());
+        result.setSize(recordPage.getSize());
+        result.setTotal(recordPage.getTotal());
+        result.setPages(recordPage.getPages());
+        result.setRecords(voList);
+
+        return result;
+
+
+    }
+
 
     private String getStatusName(Integer status) {
         return switch (status) {
