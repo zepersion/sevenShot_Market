@@ -2,6 +2,7 @@ package org.example.rewardservice.service.Impl;
 
 import cn.hutool.json.ObjectMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -44,6 +46,51 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private TaskAcceptMapper taskAcceptMapper;
+    @Transactional
+    @Override
+    public void selectBytakeId(Long taskId, Long acceptId) {
+        Long userId = UserHolder.getUser().getId();
+        Reward reward = lambdaQuery()
+                .eq(Reward::getId, taskId)
+                .one();
+        if (reward == null) {
+            throw new RuntimeException("任务不存在");
+        }
+        if (!reward.getPublisherId().equals(userId)) {
+            throw new RuntimeException("无权操作");
+        }
+        if (reward.getStatus() != 0) {
+            throw new RuntimeException("任务状态不允许选择接单人");
+        }
+       //接单记录表的修改
+        LambdaUpdateWrapper<TaskAccept> taskacceptUpdate= new LambdaUpdateWrapper<>();
+        LambdaUpdateWrapper<TaskAccept> updateOfTask = taskacceptUpdate.eq(TaskAccept::getId, acceptId)
+                .eq(TaskAccept::getTaskId, taskId)
+                .eq(TaskAccept::getStatus, 0)
+                .set(TaskAccept::getStatus, 1);
+        int update = taskAcceptMapper.update(null, updateOfTask);
+        if(update == 0){
+            throw new RuntimeException("记录不存在或者被处理");
+        }
+        //修改task的acceptorId
+        TaskAccept taskAccept = taskAcceptMapper.selectById(acceptId);
+        boolean update1 = lambdaUpdate().eq(Reward::getId, taskId)
+                .eq(Reward::getStatus, 0)
+                .set(Reward::getStatus, 1)
+                .set(Reward::getAcceptorId, taskAccept.getAcceptorId())
+                .set(Reward::getAcceptTime, LocalDateTime.now()).update();
+        if(!update1){
+            throw new RuntimeException("任务状态有问题,选择失败");
+        }
+        //其他id修改状态
+        LambdaUpdateWrapper<TaskAccept> nochooesSet = new LambdaUpdateWrapper<TaskAccept>()
+                .eq(TaskAccept::getTaskId, taskId)
+                .eq(TaskAccept::getStatus, 0)
+                .set(TaskAccept::getStatus, 2);
+        taskAcceptMapper.update(null,nochooesSet);
+
+    }
+
     @Override
     public RewardVO publish(RewardPublishDTO dto) {
         //拿到发布者:用户id
@@ -73,8 +120,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     public PageVO<RewardVO> rewardList(Long id, TaskListDTO dto) {
         Page<Reward> rewardPage = new Page<Reward>(dto.getPage(),dto.getSize());
         LambdaQueryWrapper<Reward> query = new LambdaQueryWrapper<>();
-        query.eq(id!=null,Reward::getPublisherId, id)
-                .eq(Reward::getStatus, 0)
+        query.eq(Reward::getStatus, 1)
                 .and(dto.getKeyWord()!=null,wrapper->{
                     wrapper.eq(Reward::getPublisherId, id)
                             .like(Reward::getTitle, dto.getKeyWord())
@@ -134,6 +180,9 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         }
 
         Reward reward = rewardMapper.selectById(id);
+        if(reward==null){
+            throw new RuntimeException("该任务不存在");
+        }
         RewardDetailVO vo = new RewardDetailVO();
         BeanUtils.copyProperties(reward, vo);
 
@@ -147,8 +196,11 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         Long accepthId = UserHolder.getUser().getId();
   //publishid 不能和申请id一致
         Reward task = lambdaQuery().eq(Reward::getId, id).one();
-        if(task==null||task.getPublisherId()!=accepthId){
-            throw new RuntimeException("该悬赏任务有误");
+        if(task==null){
+            throw new RuntimeException("该悬赏任务不存在");
+        }
+        if(task.getPublisherId().equals(accepthId)){
+            throw new RuntimeException("不能申请自己发布的任务");
         }
        LambdaQueryWrapper<TaskAccept> taskAcceptQuery = new LambdaQueryWrapper<>();
         LambdaQueryWrapper<TaskAccept> one= taskAcceptQuery.eq(TaskAccept::getTaskId, task.getId())
@@ -170,10 +222,13 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
 
     private String getStatusName(Integer status) {
         return switch (status) {
-            case 0 -> "待接单";
-            case 1 -> "进行中";
-            case 2 -> "已完成";
-            case 3 -> "已取消";
+            case 0 -> "待审核";
+            case 1 -> "待接单";
+            case 2 -> "进行中";
+            case 3 -> "待确认";
+            case 4 -> "已完成";
+            case 5 -> "已取消";
+            case 6 -> "违规";
             default -> "未知";
         };
     }

@@ -4,6 +4,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.example.common.Result;
 import org.example.common.dto.RewardPublishDTO;
+import org.example.common.dto.TaskApplyDTO;
 import org.example.common.dto.TaskListDTO;
 import org.example.common.utils.UserHolder;
 import org.example.common.vo.PageVO;
@@ -13,7 +14,7 @@ import org.example.rewardservice.service.RewardService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/reward")
+@RequestMapping("/api/task")
 public class RewardController {
 
     @Resource
@@ -34,15 +35,21 @@ public class RewardController {
         return Result.success(vo);
     }
     //    5.3
-    @GetMapping("/task/{id}")
+    @GetMapping("/{id}")
     public Result detail(@RequestParam Long id){
         RewardDetailVO vo = rewardService.detail(id);
         return Result.success(vo);
     }
     //5.4
     @PostMapping("/apply/{id}")
-    public Result apply(@PathVariable Long id,@RequestBody String msg){
-        rewardService.apply(id,msg);
+    public Result apply(@PathVariable Long id, @RequestBody TaskApplyDTO dto){
+        rewardService.apply(id, dto.getMessage());
+        return Result.success();
+    }
+    //5.5发布者选择接单人
+    @PostMapping("/select/{taskId}/{acceptId}")
+    public Result selectAccept(@PathVariable Long taskId,@PathVariable Long acceptId){
+        rewardService.selectBytakeId(taskId,acceptId);
         return Result.success();
     }
 }

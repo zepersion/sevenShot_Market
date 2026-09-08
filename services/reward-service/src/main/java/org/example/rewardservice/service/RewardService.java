@@ -19,4 +19,7 @@ public interface RewardService extends IService<Reward> {
     RewardDetailVO detail(Long id);
 
     void apply(Long id, String msg);
+
+    void selectBytakeId(Long taskId, Long acceptId);
+
 }
