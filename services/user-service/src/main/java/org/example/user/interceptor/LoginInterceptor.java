@@ -3,7 +3,7 @@ package org.example.user.interceptor;
 import cn.hutool.core.bean.BeanUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.common.dto.UserDto;
+import org.example.common.DTO.AllUserDTO.UserDTO;
 import org.example.common.utils.UserHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,7 +16,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        UserDto user = BeanUtil.toBean(userObj, UserDto.class);
+        UserDTO user = BeanUtil.toBean(userObj, UserDTO.class);
         UserHolder.saveUser(user);
         return true;
     }

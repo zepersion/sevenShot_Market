@@ -2,12 +2,10 @@ package org.example.goodsservice.controller;
 
 import jakarta.annotation.Resource;
 import org.example.common.Result;
-import org.example.common.dto.SeckillSaleDTO;
-import org.example.common.vo.SeckillGoodsDataVO;
-import org.example.common.vo.OrderResultVO;
+import org.example.common.DTO.AllGoodsDTO.SeckillSaleDTO;
+import org.example.common.VO.AllSeckillVO.SeckillGoodsDataVO;
 import org.example.goodsservice.FeignClient.OrderFeignClient;
 import org.example.goodsservice.service.GoodsService;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

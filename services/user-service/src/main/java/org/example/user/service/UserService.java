@@ -1,12 +1,12 @@
 package org.example.user.service;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.common.dto.CodeDTO;
-import org.example.common.dto.RegisterDTO;
-import org.example.common.dto.UserDto;
-import org.example.common.dto.UserLoginDto;
-import org.example.common.vo.*;
-import org.example.common.dto.UserUpdateDTO;
+import org.example.common.DTO.AllUserDTO.CodeDTO;
+import org.example.common.DTO.AllUserDTO.RegisterDTO;
+import org.example.common.DTO.AllUserDTO.UserLoginDto;
+import org.example.common.DTO.AllUserDTO.UserUpdateDTO;
+import org.example.common.VO.UserAllVO.RegisterVO;
+import org.example.common.VO.UserAllVO.UserLoginVo;
 import org.example.user.entity.User;
 
 

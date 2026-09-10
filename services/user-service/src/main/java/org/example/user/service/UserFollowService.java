@@ -1,8 +1,7 @@
 package org.example.user.service;
 
-import org.example.common.vo.FollowUserVO;
-import org.example.common.vo.PageVO;
-import org.example.user.entity.UserCredit;
+import FollowUserVO;
+import org.example.common.VO.PageVO;
 import org.example.user.entity.UserFollow;
 
 public interface UserFollowService {

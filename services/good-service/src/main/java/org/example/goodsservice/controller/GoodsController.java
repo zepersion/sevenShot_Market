@@ -2,9 +2,13 @@ package org.example.goodsservice.controller;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.example.common.DTO.AllGoodsDTO.*;
 import org.example.common.Result;
-import org.example.common.dto.*;
-import org.example.common.vo.*;
+import org.example.common.VO.*;
+import org.example.common.VO.GoodsAllVO.GoodsCategoryVO;
+import org.example.common.VO.GoodsAllVO.GoodsPublishVO;
+import org.example.common.VO.GoodsAllVO.GoodsVO;
+import org.example.common.VO.GoodsAllVO.HotRankVO;
 import org.example.goodsservice.service.GoodsCategoryService;
 import org.example.goodsservice.service.GoodsFavoriteService;
 import org.example.goodsservice.service.GoodsLikeService;
@@ -29,11 +33,11 @@ private GoodsService goodsService;
     private GoodsCategoryService goodsCategoryService;
     @PostMapping("/publish")
     public Result publishGoods(@RequestBody @Valid GoodsPublishDTO dto) {
-        GoodsVO goodsVO =goodsService.publish(dto);
+        GoodsPublishVO goodsVO =goodsService.publish(dto);
         return Result.success(goodsVO,"发布成功，正在审核");
     }
     @GetMapping("/list")
-    public Result goodsList(GoodsListDTO dto,@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer size) {
+    public Result goodsList(GoodsListDTO dto, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "20") Integer size) {
       PageVO<GoodsVO> vo= goodsService.goodsToList(dto,page,size);
         return Result.success(vo);
     }

@@ -8,28 +8,34 @@ import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
+import org.example.common.DTO.AllGoodsDTO.GoodsListDTO;
+import org.example.common.DTO.AllGoodsDTO.GoodsPublishDTO;
+import org.example.common.DTO.AllGoodsDTO.HotRankDTO;
+import org.example.common.DTO.AllGoodsDTO.SeckillSaleDTO;
+import org.example.common.DTO.AllUserDTO.UserDTO;
 import org.example.common.Message.SeckillOrderMessage;
-import org.example.common.dto.*;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.*;
+import org.example.common.VO.*;
+import org.example.common.VO.AllSeckillVO.SeckillGoodsDataVO;
+import org.example.common.VO.AllSeckillVO.SeckillGoodsObjectVO;
+import org.example.common.VO.GoodsAllVO.GoodsPublishVO;
+import org.example.common.VO.GoodsAllVO.GoodsVO;
+import org.example.common.VO.GoodsAllVO.HotRankVO;
 import org.example.goodsservice.FeignClient.UserFeignClient;
 import org.example.goodsservice.entity.Goods;
 import org.example.goodsservice.mapper.GoodsMapper;
 import org.example.goodsservice.mq.GoodsProducer;
-import org.example.common.Message.GoodsPublishMQMessage;
+import org.example.common.Message.AllGoodsMsg.GoodsPublishMQMessage;
 import org.example.goodsservice.service.GoodsService;
 import org.redisson.api.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -40,7 +46,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import static org.example.common.RedisConstants.*;
 
@@ -67,33 +72,41 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         SECKILL_SCRIPT.setLocation(resource);
         SECKILL_SCRIPT.setResultType(Long.class);
     }
-    
+
     @Override
-    public GoodsVO publish(GoodsPublishDTO dto) {
-        UserDto user = UserHolder.getUser();
+    public GoodsPublishVO publish(GoodsPublishDTO dto) {
+        UserDTO user = UserHolder.getUser();
         Long userId = user.getId();
         if(userId  == null) {
             throw new RuntimeException("用户未登录");
         }
+        //组装数据
+        Goods goods = new Goods();
+        goods.setDegree(dto.getDegree());
+        goods.setDescription(dto.getDescription());
+        goods.setCategoryId(dto.getCategoryId());
+        goods.setIsDonation(dto.getIsDonation());
 
+        goods.setTitle(dto.getTitle());
+        goods.setImages(JSONUtil.toJsonPrettyStr(dto.getImages()));
+        goods.setStock(dto.getStock());
+        goods.setOriginalPrice(dto.getOriginalPrice());
+        goods.setTags(JSONUtil.toJsonPrettyStr(dto.getTags()));
+        goods.setSellingPrice(dto.getSellingPrice());
+        goods.setCoverImage(dto.getCoverImage());
+        goods.setStatus(0); // 0代表待审核
+        //
+        goodsMapper.insert(goods);
+        Long goodsId = goods.getId();
         GoodsPublishMQMessage msg = new GoodsPublishMQMessage();
-        msg.setUserId(userId);
-        msg.setCategoryId(dto.getCategoryId());
+       ;
         msg.setTitle(dto.getTitle());
-        msg.setDegree(dto.getDegree());
-        msg.setImages(Collections.singletonList(dto.getImages()));
+
         msg.setDescription(dto.getDescription());
-        msg.setStock(dto.getStock());
-        msg.setOriginalPrice(dto.getOriginalPrice());
-        msg.setTags(Collections.singletonList(dto.getTags()));
-        msg.setSellingPrice(dto.getSellingPrice());
-        msg.setCoverImage(dto.getCoverImage());
-        msg.setIsDonation(dto.getIsDonation());
 
         goodsProducer.goods_publish(msg);
-        GoodsVO vo = new GoodsVO();
-
-        vo.setStatus(0); // 待审核
+        GoodsPublishVO vo = new GoodsPublishVO();
+        vo.setGoodsId(goodsId);
         return vo;
     }
 

@@ -59,5 +59,11 @@ public class RedisConstants {
     // 悬赏缓存
     public static final String REWARD_INFO_KEY = "reward:info:";
     public static final Long REWARD_INFO_TTL = 30L;
+
+    // AI模块缓存（相同关键词+分类，24小时TTL）
+    public static final String AI_COPYWRITING_KEY = "ai:copywriting:";
+    public static final String AI_ESTIMATE_KEY = "ai:estimate:";
+    public static final String AI_CLASSIFY_KEY = "ai:classify:";
+    public static final Long AI_CACHE_TTL = 24L; // 24小时
 }
 

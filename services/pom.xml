@@ -19,6 +19,7 @@
         <module>good-service</module>
         <module>order-service</module>
         <module>reward-service</module>
+        <module>ai-service</module>
     </modules>
 
 </project>

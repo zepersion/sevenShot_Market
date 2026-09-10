@@ -6,23 +6,21 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpSession;
-import org.example.common.dto.RegisterDTO;
-import org.example.common.dto.UserLoginDto;
-import org.example.common.dto.UserUpdateDTO;
-import org.example.common.vo.*;
+import org.example.common.DTO.AllUserDTO.RegisterDTO;
+import org.example.common.DTO.AllUserDTO.UserLoginDto;
+import org.example.common.DTO.AllUserDTO.UserUpdateDTO;
+import org.example.common.VO.UserAllVO.RegisterVO;
+import org.example.common.VO.UserAllVO.UserLoginVo;
 import org.example.user.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.dto.CodeDTO;
-import org.example.common.dto.UserDto;
+import org.example.common.DTO.AllUserDTO.CodeDTO;
+import org.example.common.DTO.AllUserDTO.UserDTO;
 import org.example.user.mapper.UserMapper;
-import org.example.common.utils.UserHolder;
 import org.example.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -89,7 +87,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>implements Use
 
         // 生成 token 并存入 Redis
         String token = UUID.randomUUID().toString();
-        UserDto userDto = new UserDto();
+        UserDTO userDto = new UserDTO();
         userDto.setId(user.getId());
         userDto.setPhone(phone);
         userDto.setUsername(registerDTO.getUsername());
@@ -143,7 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>implements Use
 
         // 生成 token 存入 Redis
         String token = UUID.randomUUID().toString();
-        UserDto userDto = new UserDto();
+        UserDTO userDto = new UserDTO();
         userDto.setId(user.getId());
         userDto.setPhone(phone);
         userDto.setUsername(user.getUsername());

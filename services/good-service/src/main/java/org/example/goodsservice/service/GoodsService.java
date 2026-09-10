@@ -2,13 +2,20 @@ package org.example.goodsservice.service;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.example.common.dto.*;
-import org.example.common.vo.*;
+import org.example.common.DTO.AllGoodsDTO.GoodsListDTO;
+import org.example.common.DTO.AllGoodsDTO.GoodsPublishDTO;
+import org.example.common.DTO.AllGoodsDTO.HotRankDTO;
+import org.example.common.DTO.AllGoodsDTO.SeckillSaleDTO;
+import org.example.common.VO.*;
+import org.example.common.VO.AllSeckillVO.SeckillGoodsDataVO;
+import org.example.common.VO.GoodsAllVO.GoodsPublishVO;
+import org.example.common.VO.GoodsAllVO.GoodsVO;
+import org.example.common.VO.GoodsAllVO.HotRankVO;
 
 import java.util.List;
 
 public interface GoodsService {
-    GoodsVO publish(@Valid GoodsPublishDTO dto);
+    GoodsPublishVO publish(@Valid GoodsPublishDTO dto);
 
 
     PageVO<GoodsVO> goodsToList(GoodsListDTO dto, Integer page, Integer size);

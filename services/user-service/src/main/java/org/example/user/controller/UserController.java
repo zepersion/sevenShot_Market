@@ -4,13 +4,14 @@ import cn.hutool.core.bean.BeanUtil;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+import org.example.common.DTO.AllUserDTO.*;
 import org.example.common.Result;
-import org.example.common.dto.*;
-import org.example.common.vo.*;
+import org.example.common.VO.*;
+import org.example.common.VO.UserAllVO.SignInVO;
+import org.example.common.VO.UserAllVO.UserLoginVo;
 import org.example.user.entity.User;
 import org.example.user.entity.UserCredit;
 import org.example.user.entity.UserFollow;
-import org.example.user.mapper.UserMapper;
 import org.example.user.service.UserCreditService;
 import org.example.user.service.UserFollowService;
 import org.example.user.service.UserService;
@@ -44,7 +45,7 @@ public class UserController {
     public Result register(@RequestBody RegisterDTO registerDTO, HttpSession session) {
         RegisterVO vo = userService.register(registerDTO);
 
-        UserDto loginUser = new UserDto();
+        UserDTO loginUser = new UserDTO();
         loginUser.setId(vo.getUserId());
         loginUser.setUsername(registerDTO.getUsername());
         loginUser.setPhone(registerDTO.getPhone());
@@ -62,13 +63,13 @@ public class UserController {
 
     @GetMapping("/info")
     public Result currentUser() {
-        UserDto user = UserHolder.getUser();
+        UserDTO user = UserHolder.getUser();
         return Result.success(user);
     }
 
     @PutMapping("/info")
     public Result updateUser(@RequestBody UserUpdateDTO dto) {
-        UserDto user = UserHolder.getUser();
+        UserDTO user = UserHolder.getUser();
         userService.updateInfo(user.getId(), dto);
         return Result.success();
     }
@@ -113,10 +114,10 @@ public class UserController {
         return Result.success();
     }
     @GetMapping("/{id}")
-    public Result<UserDto> getUserById(@PathVariable Long id) {
+    public Result<UserDTO> getUserById(@PathVariable Long id) {
         User user = userService.getById(id);
         if (user == null) return Result.error("用户不存在");
-        UserDto dto = BeanUtil.copyProperties(user, UserDto.class);
+        UserDTO dto = BeanUtil.copyProperties(user, UserDTO.class);
         return Result.success(dto);
     }
 }

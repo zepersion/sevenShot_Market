@@ -1,6 +1,6 @@
 package org.example.goodsservice.mq;
 
-import org.example.common.Message.GoodsPublishMQMessage;
+import org.example.common.Message.AllGoodsMsg.GoodsPublishMQMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

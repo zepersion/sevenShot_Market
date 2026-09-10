@@ -1,23 +1,23 @@
 package org.example.common.utils;
 
-import org.example.common.dto.UserDto;
+import org.example.common.DTO.AllUserDTO.UserDTO;
 
 
 //userholder相当于我们在线程中有一个存独立资料的抽屉
 public class UserHolder {
     //静态threadlocal 存脱敏后的用户
-    private static final ThreadLocal<UserDto> THREAD_LOCAL_USER = new ThreadLocal<>();
+    private static final ThreadLocal<UserDTO> THREAD_LOCAL_USER = new ThreadLocal<>();
         //存用户信息
-    public static void saveUser(UserDto userDto){
+    public static void saveUser(UserDTO userDto){
         THREAD_LOCAL_USER.set(userDto);
     }
     //获取用户信息
-    public static UserDto getUser() {
+    public static UserDTO getUser() {
         return THREAD_LOCAL_USER.get();
     }
     //获取用户登陆id
-    public static Long getUserId(UserDto userDto){
-        UserDto user = getUser();
+    public static Long getUserId(UserDTO userDto){
+        UserDTO user = getUser();
         // 未登录时返回null，拦截器已经提前拦截，正常业务不会走到这里
         return user == null ? null :user.getId();
     }

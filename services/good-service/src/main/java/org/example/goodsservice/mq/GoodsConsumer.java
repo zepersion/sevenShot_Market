@@ -1,27 +1,31 @@
 package org.example.goodsservice.mq;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.nacos.shaded.io.grpc.Channel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
-import org.example.common.Message.GoodsFavoriteMessage;
-import org.example.common.Message.GoodsLikeMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.example.common.Message.AllGoodsMsg.GoodsFavoriteMessage;
+import org.example.common.Message.AllGoodsMsg.GoodsLikeMessage;
+import org.example.goodsservice.FeignClient.AiFeignClient;
 import org.example.goodsservice.entity.Goods;
 import org.example.goodsservice.entity.GoodsFavorite;
 import org.example.goodsservice.entity.GoodsLike;
 import org.example.goodsservice.mapper.GoodsFavoriteMapper;
 import org.example.goodsservice.mapper.GoodsLikeMapper;
 import org.example.goodsservice.mapper.GoodsMapper;
-import org.example.common.Message.GoodsAuditTaskMessage;
-import org.example.common.Message.GoodsPublishMQMessage;
+import org.example.common.Message.AllGoodsMsg.GoodsAuditTaskMessage;
+import org.example.common.Message.AllGoodsMsg.GoodsPublishMQMessage;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -29,18 +33,18 @@ import java.time.LocalDateTime;
 
 import static org.example.common.RedisConstants.GOODS_INFO_KEY;
 import static org.example.common.RedisConstants.GOODS_LIKE_KEY;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GoodsConsumer {
     @Resource
     private GoodsFavoriteMapper goodsFavoriteMapper;
     @Resource
-    private RabbitTemplate rabbitTemplate;
-    @Resource
     private GoodsMapper goodsMapper;
     @Resource
     private GoodsLikeMapper goodsLikeMapper;
+    @Resource
+    private AiFeignClient aiFeignClient;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @RabbitListener(bindings = @QueueBinding(
@@ -49,30 +53,35 @@ public class GoodsConsumer {
             key = {"goods.audit"}
     ))
     public void consumerGoodsPublish(GoodsPublishMQMessage msg) {
-        //组装数据
-        Goods goods = new Goods();
-        goods.setDegree(msg.getDegree());
-        goods.setDescription(msg.getDescription());
-        goods.setCategoryId(msg.getCategoryId());
-        goods.setIsDonation(msg.getIsDonation());
 
-        goods.setTitle(msg.getTitle());
-        goods.setImages(JSONUtil.toJsonPrettyStr(msg.getImages()));
-        goods.setStock(msg.getStock());
-        goods.setOriginalPrice(msg.getOriginalPrice());
-        goods.setTags(JSONUtil.toJsonPrettyStr(msg.getTags()));
-        goods.setSellingPrice(msg.getSellingPrice());
-        goods.setCoverImage(msg.getCoverImage());
-        goods.setStatus(0); // 0代表待审核
-        //
-        goodsMapper.insert(goods);
-        Long goodsId = goods.getId();
-        GoodsAuditTaskMessage auditMsg = new GoodsAuditTaskMessage();
-        auditMsg.setGoodsId(goodsId);
-        auditMsg.setTitle(msg.getTitle());
-        auditMsg.setDescription(msg.getDescription());
-        auditMsg.setTags(msg.getTags());
-        rabbitTemplate.convertAndSend("ai.audit.exchange", "ai.audit.queue", auditMsg);
+
+        String description = msg.getDescription();
+        String title = msg.getTitle();
+            Long id = msg.getId();
+            Goods goods = goodsMapper.selectById(id);
+            if(goods == null){
+                log.error("商品不存在");
+                return;
+            }
+
+            Boolean success= aiFeignClient.reviewPic(description, title);
+     if(success){
+         LambdaUpdateWrapper<Goods> updateWrapper = Wrappers.<Goods>lambdaUpdate()
+                 .eq(Goods::getId, id)
+                 .set(Goods::getDescription, description)
+                 .set(Goods::getTitle, title)
+                 .set(Goods::getStatus, 1);
+         goodsMapper.update(updateWrapper);
+         log.info("商品审核成功");
+     }else {
+         LambdaUpdateWrapper<Goods> updateWrapper = Wrappers.<Goods>lambdaUpdate()
+                 .eq(Goods::getId, id)
+                 .set(Goods::getStatus,4 );
+         goodsMapper.update(updateWrapper);
+         log.error("该商品违规!");
+     }
+
+
     }
 
     @RabbitListener(bindings = @QueueBinding(

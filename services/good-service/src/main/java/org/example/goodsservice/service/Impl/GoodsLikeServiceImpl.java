@@ -2,23 +2,18 @@ package org.example.goodsservice.service.Impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.Message.GoodsLikeMessage;
-import org.example.common.dto.GoodLikeDTO;
+import org.example.common.Message.AllGoodsMsg.GoodsLikeMessage;
+import org.example.common.DTO.AllGoodsDTO.GoodLikeDTO;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.GoodsVO;
-import org.example.common.vo.UserVO;
 import org.example.goodsservice.entity.Goods;
 import org.example.goodsservice.entity.GoodsLike;
 import org.example.goodsservice.mapper.GoodsLikeMapper;
 import org.example.goodsservice.mapper.GoodsMapper;
 import org.example.goodsservice.service.GoodsLikeService;
-import org.example.goodsservice.service.GoodsService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 

@@ -1,19 +1,16 @@
 package org.example.user.service.impl;
 
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.FollowUserVO;
-import org.example.common.vo.PageVO;
+import FollowUserVO;
+import org.example.common.VO.PageVO;
 import org.example.user.entity.User;
-import org.example.user.entity.UserCredit;
 import org.example.user.entity.UserFollow;
 import org.example.user.mapper.UserFollowMapper;
 import org.example.user.mapper.UserMapper;
 import org.example.user.service.UserFollowService;
-import org.example.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;

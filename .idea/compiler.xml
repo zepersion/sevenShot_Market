@@ -20,6 +20,7 @@
         <module name="order-service" />
         <module name="user-service" />
         <module name="common" />
+        <module name="ai-service" />
         <module name="reward-service" />
       </profile>
     </annotationProcessing>
@@ -33,6 +34,7 @@
       <module name="AI-service" options="-parameters" />
       <module name="Ai-service" options="-parameters" />
       <module name="SevenShot_Market" options="" />
+      <module name="ai-service" options="-parameters" />
       <module name="common" options="-parameters" />
       <module name="goods-service" options="-parameters" />
       <module name="order-service" options="-parameters" />

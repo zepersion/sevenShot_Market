@@ -5,14 +5,17 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.example.common.Result;
-import org.example.common.dto.AfterSaleApplyDTO;
-import org.example.common.dto.OrdinaryOrderDTO;
+import org.example.common.DTO.AllOrderDTO.AfterSaleApplyDTO;
+import org.example.common.DTO.AllGoodsDTO.OrdinaryOrderDTO;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.*;
-import org.example.common.vo.OrderDetailVO.DetailOrderVO;
+import org.example.common.VO.*;
+import org.example.common.VO.OrderVO.OrderDetailVO.DetailOrderVO;
+import org.example.common.VO.OrderVO.AfterSaleVO;
+import org.example.common.VO.OrderVO.OrderListVO;
+import org.example.common.VO.OrderVO.OrderResultVO;
+import org.example.common.VO.OrderVO.OrdinaryOrderVO;
 import org.example.orderservice.Service.AfterSaleService;
 import org.example.orderservice.Service.OrderService;
-import org.springframework.data.annotation.Reference;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,8 +1,6 @@
 package org.example.orderservice.Service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,18 +9,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.Message.OrderCompleteMessage;
-import org.example.common.Message.OrderDelayMessage;
+import org.example.common.Message.AllOrderMessage.OrderCompleteMessage;
+import org.example.common.Message.AllOrderMessage.OrderDelayMessage;
 import org.example.common.Result;
-import org.example.common.dto.AfterSaleApplyDTO;
-import org.example.common.dto.OrdinaryOrderDTO;
-import org.example.common.dto.UserDto;
+import org.example.common.DTO.AllGoodsDTO.OrdinaryOrderDTO;
+import org.example.common.DTO.AllUserDTO.UserDTO;
 import org.example.common.utils.UserHolder;
-import org.example.common.vo.*;
-import org.example.common.vo.OrderDetailVO.BuyerVO;
-import org.example.common.vo.OrderDetailVO.DetailOrderVO;
-import org.example.common.vo.OrderDetailVO.OrderGoodsVO;
-import org.example.common.vo.OrderDetailVO.SellerVO;
+import org.example.common.VO.*;
+import org.example.common.VO.OrderVO.OrderDetailVO.BuyerVO;
+import org.example.common.VO.OrderVO.OrderDetailVO.DetailOrderVO;
+import org.example.common.VO.OrderVO.OrderDetailVO.OrderGoodsVO;
+import org.example.common.VO.OrderVO.OrderDetailVO.SellerVO;
+import org.example.common.VO.OrderVO.OrderListVO;
+import org.example.common.VO.OrderVO.OrderResultVO;
+import org.example.common.VO.OrderVO.OrdinaryOrderVO;
 import org.example.orderservice.FeignClient.UserFeignClient;
 import org.example.orderservice.Service.OrderService;
 import org.example.orderservice.entity.Order;
@@ -75,7 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private AfterSaleMapper afterSaleMapper;
     @Override
     public OrdinaryOrderVO createOrder(OrdinaryOrderDTO dto) {
-        UserDto user = UserHolder.getUser();
+        UserDTO user = UserHolder.getUser();
         Long userId = user.getId();
 
         // 1. 分布式锁：防止同一用户对同一商品重复下单
@@ -262,8 +262,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             vo.setBuyerVO(buyerVO);
         }
         else {
-            Result<UserDto> user = userFeignClient.getUserById(order.getBuyerId());
-            UserDto buyer0 = user.getData();
+            Result<UserDTO> user = userFeignClient.getUserById(order.getBuyerId());
+            UserDTO buyer0 = user.getData();
             if(buyer0 ==null) {
                 log.error("{}不存在,商品信息有误", order.getBuyerId());
                 return null;
@@ -287,8 +287,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             vo.setSellerVO(sellerVO1);
         }
         else {
-            Result<UserDto> user = userFeignClient.getUserById(order.getSellerId());
-            UserDto seller0= user.getData();
+            Result<UserDTO> user = userFeignClient.getUserById(order.getSellerId());
+            UserDTO seller0= user.getData();
             if(seller0 ==null) {
                 log.error("{}不存在,商品信息有误", order.getSellerId());
                 return null;

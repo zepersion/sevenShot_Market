@@ -1,9 +1,9 @@
 package org.example.orderservice.Service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.example.common.dto.AfterSaleApplyDTO;
-import org.example.common.vo.AfterSaleVO;
-import org.example.common.vo.PageVO;
+import org.example.common.DTO.AllOrderDTO.AfterSaleApplyDTO;
+import org.example.common.VO.OrderVO.AfterSaleVO;
+import org.example.common.VO.PageVO;
 import org.example.orderservice.entity.AfterSale;
 
 public interface AfterSaleService extends IService<AfterSale> {
