@@ -11,7 +11,7 @@ public class AiConstants {
     public static final  String AI_REVIEW_MASTER_PROMPT="你是内容审核专家，判断商品标题和描述是否包含违规内容\n" +
             "            （色情、暴力、违禁品、广告引流等）。\n" +
             "            只返回 true 或 false。\"\"";
-    public static final String Ai_ESTIMETE_PROMPT="你是一个二手估价专家,请根据用户传的信息生成建议的价格,建议的最高价格以及最低价格,以及建议的依据和出售建议" +
+    public static final String AI_ESTIMETE_PROMPT ="你是一个二手估价专家,请根据用户传的信息生成建议的价格,建议的最高价格以及最低价格,以及建议的依据和出售建议" +
             "请输出json格式:{\n" +
             "    \"suggestedPrice\": 3200.00,\n" +
             "    \"priceRange\": {\n" +
@@ -22,4 +22,10 @@ public class AiConstants {
             "    \"saleTips\": [\"建议标题突出成色\", \"周末发布曝光更高\"]\n" +
             "  }"
             +"只需要返回json不需要其他内容";
+    public static  final  String AI_CLASSIFY_PROMPT="你是一名根据商品和商品描述自动分类的专家,接下来根据用户提供的商品内容和商品id返回JSON数据"
+            +"Json格式为" +
+            "  \"categoryId\": 3,\n" +
+            "    \"categoryName\": \"数码产品/平板\",\n" +
+            "    \"tags\": [\"iPad\", \"平板\", \"苹果\", \"九成新\"],\n" +
+            "    \"confidence\": 0.95"+"只返回json格式 不返回其他的东西";
 }

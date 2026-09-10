@@ -6,6 +6,7 @@ import org.example.common.DTO.aiDTO.AiGoodsEstimateDTO;
 import org.example.common.Result;
 import org.example.common.DTO.aiDTO.AiGoodsTextDTO;
 import org.example.common.VO.AiVO.AiGoodsTextVO;
+import org.example.common.VO.AiVO.AiclassifyVO;
 import org.example.common.VO.AiVO.GoodsEstimateVO;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.model.ChatModel;
@@ -26,8 +27,6 @@ public class AiController {
     ChatModel chatModel;
 @PostMapping("/goods/copywriting")
     public Result<AiGoodsTextVO> copyWriting(@RequestBody AiGoodsTextDTO dto) {
-
-
     AiGoodsTextVO vo = aiService.copywriting(dto);
     return Result.success(vo);
 }
@@ -39,8 +38,6 @@ public Boolean reviewPic(String title,String  description)
             .getResult()
             .getOutput()
             .getContent();
-
-
     return Boolean.parseBoolean(result.trim().toLowerCase());
 
 }
@@ -49,5 +46,12 @@ public Boolean reviewPic(String title,String  description)
         GoodsEstimateVO vo=aiService.estimate(dto);
         return Result.success(vo);
     }
+    @PostMapping("/goods/classify")
+    public Result aiClassify(@RequestParam String title,@RequestParam String description){
+        AiclassifyVO vo=aiService.classify(title,description);
+        return Result.success(vo);
+
+    }
+
 
 }
