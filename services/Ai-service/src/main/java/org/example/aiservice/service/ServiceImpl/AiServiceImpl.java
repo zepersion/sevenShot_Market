@@ -1,7 +1,6 @@
 package org.example.aiservice.service.ServiceImpl;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
@@ -160,7 +159,7 @@ private ChatModel chatModel;
         vo.setSuggestedPrice(dto.getOriginalPrice());
         return vo;
     }
-    public AiclassifyVO classifyFallback(String title,String descirption){
+    public AiclassifyVO classifyFallback(String title,String descirption,BlockException ex){
         AiclassifyVO vo = new AiclassifyVO();
         vo.setCategoryName(title);
         vo.setCategoryName(descirption);
