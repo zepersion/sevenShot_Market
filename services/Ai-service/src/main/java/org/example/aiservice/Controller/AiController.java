@@ -30,6 +30,7 @@ public class AiController {
     AiGoodsTextVO vo = aiService.copywriting(dto);
     return Result.success(vo);
 }
+    @PostMapping("/reviewPic")
 public Boolean reviewPic(String title,String  description)
 {
     String userMsg="标题"+":"+title+","+"描述"+":"+description;
@@ -52,6 +53,10 @@ public Boolean reviewPic(String title,String  description)
         return Result.success(vo);
 
     }
-
+    @GetMapping("/recommend")
+    public String recommend(String text){
+     String msg=  aiService.recommend(text);
+    return msg;
+    }
 
 }

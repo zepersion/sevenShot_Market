@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@FeignClient(name = "user-service",path = "/api/user")
 @RestController
 @RequestMapping("/api/goods")
 public class GoodsController {
@@ -70,7 +69,7 @@ private GoodsService goodsService;
         return Result.success(vo);
     }
     @PostMapping("offline/{id}")
-    public  Result offSale(@RequestBody @NotNull Long goodsId){
+    public  Result offSale(@PathVariable @NotNull Long goodsId){
         goodsService.offSaleGoods(goodsId);
         return Result.success();
     }
@@ -84,6 +83,18 @@ private GoodsService goodsService;
     public Result goodsRankingHot(HotRankDTO dto){
        List <HotRankVO> vo= goodsService.getHotRank(dto);
         return Result.success(vo);
+    }
+    // 提供接口：查询审核通过、上架的商品列表
+    @GetMapping("/listValidGoods")
+    public Result<List<GoodsVO>> listValidGoods(){
+        List<GoodsVO> list = goodsService.getValidOnSaleGoods();
+        return Result.success(list);
+    }
+
+    // 根据id批量查询商品VO
+    @PostMapping("/listByIds")
+    public Result<List<GoodsVO>> listByIds(@RequestBody List<Long> ids){
+        return Result.success(goodsService.getGoodsVoByIds(ids));
     }
 
 }

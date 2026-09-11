@@ -1,7 +1,8 @@
 package org.example.rewardservice.service.Impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.json.ObjectMapper;
+import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,11 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.common.DTO.AllRewardDTO.PointsDTO;
 import org.example.common.DTO.AllRewardDTO.RewardPublishDTO;
 import org.example.common.DTO.AllRewardDTO.TaskListDTO;
+import org.example.common.Result;
+import org.example.common.VO.GoodsAllVO.GoodsVO;
 import org.example.common.utils.UserHolder;
 import org.example.common.VO.PageVO;
 import org.example.common.VO.AIlRewardVO.PointsVO;
 import org.example.common.VO.AIlRewardVO.RewardDetailVO;
 import org.example.common.VO.AIlRewardVO.RewardVO;
+import org.example.rewardservice.FeignClient.AiFeignClient;
+import org.example.rewardservice.FeignClient.GoodsFeignClient;
 import org.example.rewardservice.entity.Reward;
 import org.example.rewardservice.entity.TaskAccept;
 import org.example.rewardservice.entity.TaskPointsRecord;
@@ -27,15 +32,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.example.common.RedisConstants.REWARD_VIEW_KEY;
-import static org.example.common.RedisConstants.REWARD_VIEW_USER_KEY;
+import static org.example.common.RedisConstants.*;
 
 @Slf4j
 @Service
@@ -44,13 +50,15 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     @Resource
     private RewardMapper rewardMapper;
     @Resource
-    private ObjectMapper objectMapper;
-    @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private TaskAcceptMapper taskAcceptMapper;
     @Resource
     private TaskPointsRecordMapper taskPointsRecordMapper;
+    @Resource
+    private   GoodsFeignClient goodsFeignClient;
+    @Resource
+    private AiFeignClient aiFeignClient;
     @Transactional
     @Override
     public void selectBytakeId(Long taskId, Long acceptId) {
@@ -64,27 +72,27 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         if (!reward.getPublisherId().equals(userId)) {
             throw new RuntimeException("无权操作");
         }
-        if (reward.getStatus() != 0) {
+        if (reward.getStatus() != 1) {
             throw new RuntimeException("任务状态不允许选择接单人");
         }
-       //接单记录表的修改
-        LambdaUpdateWrapper<TaskAccept> taskacceptUpdate= new LambdaUpdateWrapper<>();
+        //接单记录表的修改
+        LambdaUpdateWrapper<TaskAccept> taskacceptUpdate = new LambdaUpdateWrapper<>();
         LambdaUpdateWrapper<TaskAccept> updateOfTask = taskacceptUpdate.eq(TaskAccept::getId, acceptId)
                 .eq(TaskAccept::getTaskId, taskId)
                 .eq(TaskAccept::getStatus, 0)
                 .set(TaskAccept::getStatus, 1);
         int update = taskAcceptMapper.update(null, updateOfTask);
-        if(update == 0){
+        if (update == 0) {
             throw new RuntimeException("记录不存在或者被处理");
         }
         //修改task的acceptorId
         TaskAccept taskAccept = taskAcceptMapper.selectById(acceptId);
         boolean update1 = lambdaUpdate().eq(Reward::getId, taskId)
-                .eq(Reward::getStatus, 0)
-                .set(Reward::getStatus, 1)
+                .eq(Reward::getStatus, 1)
+                .set(Reward::getStatus, 2)
                 .set(Reward::getAcceptorId, taskAccept.getAcceptorId())
                 .set(Reward::getAcceptTime, LocalDateTime.now()).update();
-        if(!update1){
+        if (!update1) {
             throw new RuntimeException("任务状态有问题,选择失败");
         }
         //其他id修改状态
@@ -92,7 +100,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
                 .eq(TaskAccept::getTaskId, taskId)
                 .eq(TaskAccept::getStatus, 0)
                 .set(TaskAccept::getStatus, 2);
-        taskAcceptMapper.update(null,nochooesSet);
+        taskAcceptMapper.update(null, nochooesSet);
 
     }
 
@@ -101,7 +109,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         //拿到发布者:用户id
         Long id = UserHolder.getUser().getId();
         //
-        if(id==null){
+        if (id == null) {
             throw new RuntimeException("当前用户未登录");
 
         }
@@ -113,9 +121,9 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         reward.setCreateTime(LocalDateTime.now());
         reward.setUpdateTime(LocalDateTime.now());
 
-      save(reward);
-      RewardVO vo = new RewardVO();
-      BeanUtils.copyProperties(reward, vo);
+        save(reward);
+        RewardVO vo = new RewardVO();
+        BeanUtils.copyProperties(reward, vo);
 
 
         return vo;
@@ -123,27 +131,27 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
 
     @Override
     public PageVO<RewardVO> rewardList(Long id, TaskListDTO dto) {
-        Page<Reward> rewardPage = new Page<Reward>(dto.getPage(),dto.getSize());
+        Page<Reward> rewardPage = new Page<Reward>(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<Reward> query = new LambdaQueryWrapper<>();
         query.eq(Reward::getStatus, 1)
                 .eq(id != null, Reward::getPublisherId, id)
-                .and(dto.getKeyWord()!=null,wrapper->{
+                .and(dto.getKeyWord() != null, wrapper -> {
                     wrapper.like(Reward::getTitle, dto.getKeyWord())
                             .or().like(Reward::getDescription, dto.getKeyWord());
-                }).le(dto.getMinReward()!=null,Reward::getReward,dto.getMinReward())
-                .ge(dto.getMaxReward()!=null,Reward::getReward,dto.getMaxReward())
-                .eq(dto.getTaskId()!=null,Reward::getId,dto.getTaskId())
-                .eq(dto.getCategoryId()!=null,Reward::getCategoryId,dto.getCategoryId());
+                }).le(dto.getMinReward() != null, Reward::getReward, dto.getMaxReward())
+                .ge(dto.getMaxReward() != null, Reward::getReward, dto.getMinReward())
+                .eq(dto.getTaskId() != null, Reward::getId, dto.getTaskId())
+                .eq(dto.getCategoryId() != null, Reward::getCategoryId, dto.getCategoryId());
         if (dto.getSortType() != null) {
             if (dto.getSortType() == 1) {
                 query.orderByDesc(Reward::getReward);    // 赏金从高到低
             } else if (dto.getSortType() == 2) {
                 query.orderByAsc(Reward::getReward);     // 赏金从低到高
             } else if (dto.getSortType() == 3) {
-               query.orderByAsc(Reward::getCreateTime);// 最新发布
+                query.orderByAsc(Reward::getCreateTime);// 最新发布
             }
         } else {
-          query.orderByDesc(Reward::getCreateTime);// 默认按发布时间倒序
+            query.orderByDesc(Reward::getCreateTime);// 默认按发布时间倒序
         }
         Page<Reward> pageList = rewardMapper.selectPage(rewardPage, query);
         List<RewardVO> voList = pageList.getRecords().stream().map(r ->
@@ -168,24 +176,24 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         Long userId = UserHolder.getUser().getId();
         //userId可能为空（游客访问）
         String userViewKey = null;
-        if(userId != null){
-             userViewKey = REWARD_VIEW_USER_KEY+userId;
+        if (userId != null) {
+            userViewKey = REWARD_VIEW_USER_KEY + userId;
         }
-        String viewKey=REWARD_VIEW_KEY+id;
+        String viewKey = REWARD_VIEW_KEY + id;
 
-        if(userId==null||Boolean.FALSE.equals(stringRedisTemplate.hasKey(userViewKey))){
-            if(userId!=null){
-                stringRedisTemplate.opsForValue().set(userViewKey,userId.toString(),24,TimeUnit.HOURS);
+        if (userId == null || Boolean.FALSE.equals(stringRedisTemplate.hasKey(userViewKey))) {
+            if (userId != null) {
+                stringRedisTemplate.opsForValue().set(userViewKey, userId.toString(), 24, TimeUnit.HOURS);
             }
-            stringRedisTemplate.opsForHash().increment(viewKey,id.toString(),1);
+            stringRedisTemplate.opsForHash().increment(viewKey, id.toString(), 1);
         }
-        if(id==null){
+        if (id == null) {
             throw new RuntimeException("该任务状态异常");
 
         }
 
         Reward reward = rewardMapper.selectById(id);
-        if(reward==null){
+        if (reward == null) {
             throw new RuntimeException("该任务不存在");
         }
         RewardDetailVO vo = new RewardDetailVO();
@@ -195,23 +203,24 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         return vo;
 
     }
+
     @Transactional
     @Override
     public void apply(Long id, String msg) {
         Long accepthId = UserHolder.getUser().getId();
-  //publishid 不能和申请id一致
+        //publishid 不能和申请id一致
         Reward task = lambdaQuery().eq(Reward::getId, id).one();
-        if(task==null){
+        if (task == null) {
             throw new RuntimeException("该悬赏任务不存在");
         }
-        if(task.getPublisherId().equals(accepthId)){
+        if (task.getPublisherId().equals(accepthId)) {
             throw new RuntimeException("不能申请自己发布的任务");
         }
-       LambdaQueryWrapper<TaskAccept> taskAcceptQuery = new LambdaQueryWrapper<>();
-        LambdaQueryWrapper<TaskAccept> one= taskAcceptQuery.eq(TaskAccept::getTaskId, task.getId())
+        LambdaQueryWrapper<TaskAccept> taskAcceptQuery = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<TaskAccept> one = taskAcceptQuery.eq(TaskAccept::getTaskId, task.getId())
                 .eq(TaskAccept::getAcceptorId, accepthId);
         TaskAccept taskAccept = taskAcceptMapper.selectOne(one);
-        if(taskAccept!=null){
+        if (taskAccept != null) {
             throw new RuntimeException("已经申请过该任务");
         }
         TaskAccept acceptstatus = new TaskAccept();
@@ -278,7 +287,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         LambdaQueryWrapper<TaskAccept> accepters = accepterQuery.eq(TaskAccept::getAcceptorId, userId);
         List<TaskAccept> taskAccepts = taskAcceptMapper.selectList(accepters);
         //判断如果为空 返回空集合
-        if(BeanUtil.isEmpty(taskAccepts)){
+        if (BeanUtil.isEmpty(taskAccepts)) {
             PageVO<RewardVO> vo = new PageVO<>();
             vo.setCurrent(0L);
             vo.setSize(0L);
@@ -288,7 +297,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
         }
         //根据这些资料通过taskid查询Reward表
         List<Long> ids = taskAccepts.stream().map(TaskAccept::getTaskId).toList();
-            //
+        //
         Page<Reward> pageEnity = this.lambdaQuery().in(Reward::getId, ids)
                 .like(Reward::getTitle, dto.getKeyWord())
                 .like(Reward::getDescription, dto.getKeyWord())
@@ -303,7 +312,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
             return vo;
         }).collect(Collectors.toList());
 
-    // 拼接vo
+        // 拼接vo
         PageVO<RewardVO> vo = new PageVO<>();
         vo.setTotal(pageEnity.getTotal());
         vo.setRecords(collect);
@@ -321,13 +330,12 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
 
 
         LambdaQueryWrapper<TaskPointsRecord> pointsQuery = new LambdaQueryWrapper<>();
-      pointsQuery.eq(TaskPointsRecord::getUserId, userId)
-              .orderByDesc(TaskPointsRecord::getCreateTime);
+        pointsQuery.eq(TaskPointsRecord::getUserId, userId)
+                .orderByDesc(TaskPointsRecord::getCreateTime);
 
-      if(dto.getType()!=null){
-          pointsQuery.eq(TaskPointsRecord::getType, dto.getType());
-      }
-        pointsQuery.orderByDesc(TaskPointsRecord::getCreateTime);
+        if (dto.getType() != null) {
+            pointsQuery.eq(TaskPointsRecord::getType, dto.getType());
+        }
         Page<TaskPointsRecord> pages = new Page<>(page, size);
         Page<TaskPointsRecord> recordPage = taskPointsRecordMapper.selectPage(pages, pointsQuery);
 
@@ -351,6 +359,36 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
 
     }
 
+    @Override
+    public List<GoodsVO> getAiRecommendGoods(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        Reward one = lambdaQuery().eq(Reward::getPublisherId, userId)
+                .eq(Reward::getStatus, 1)
+                .orderByDesc(Reward::getCreateTime)
+                .one();
+        //
+    String cache=AI_RECOMMEND_KEY+one.getTitle()+":"+one.getDescription();
+        String aiRecomend = stringRedisTemplate.opsForValue().get(cache);
+        if(aiRecomend!=null){
+            return JSONUtil.toList(aiRecomend, GoodsVO.class);
+    }
+        if (one == null) {
+            return goodsFeignClient.listValidGoods().getData();
+        }
+
+        String text=one.getTitle()+":"+one.getDescription();
+        Result<List<GoodsVO>> remoteResult = goodsFeignClient.listValidGoods();
+        List<GoodsVO> goodsList = remoteResult.getData();
+        if(CollectionUtils.isEmpty(goodsList)){
+            return new ArrayList<>();
+        }
+        String result = aiFeignClient.recommend(text);
+        stringRedisTemplate.opsForValue().set(cache, result, 30, TimeUnit.MINUTES);
+        return JSONUtil.toList(result, GoodsVO.class);
+    }
+
 
     private String getStatusName(Integer status) {
         return switch (status) {
@@ -366,7 +404,4 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
     }
 
 
-
-
-
-}
+    }

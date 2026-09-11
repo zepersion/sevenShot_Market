@@ -5,11 +5,14 @@ import jakarta.validation.Valid;
 import org.example.common.DTO.AllRewardDTO.PointsDTO;
 import org.example.common.DTO.AllRewardDTO.RewardPublishDTO;
 import org.example.common.DTO.AllRewardDTO.TaskListDTO;
+import org.example.common.VO.GoodsAllVO.GoodsVO;
 import org.example.common.VO.PageVO;
 import org.example.common.VO.AIlRewardVO.PointsVO;
 import org.example.common.VO.AIlRewardVO.RewardDetailVO;
 import org.example.common.VO.AIlRewardVO.RewardVO;
 import org.example.rewardservice.entity.Reward;
+
+import java.util.List;
 
 public interface RewardService extends IService<Reward> {
 
@@ -31,4 +34,6 @@ public interface RewardService extends IService<Reward> {
     PageVO<RewardVO> myAcceptList(Long userId, TaskListDTO dto);
 
     PageVO<PointsVO> points(PointsDTO dto, Long userId);
+
+    List<GoodsVO> getAiRecommendGoods(Long userId);
 }

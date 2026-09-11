@@ -6,6 +6,7 @@ import org.example.common.DTO.AllRewardDTO.PointsDTO;
 import org.example.common.DTO.AllRewardDTO.RewardPublishDTO;
 import org.example.common.DTO.AllRewardDTO.TaskApplyDTO;
 import org.example.common.DTO.AllRewardDTO.TaskListDTO;
+import org.example.common.VO.GoodsAllVO.GoodsVO;
 import org.example.common.utils.UserHolder;
 import org.example.common.VO.PageVO;
 import org.example.common.VO.AIlRewardVO.PointsVO;
@@ -13,6 +14,8 @@ import org.example.common.VO.AIlRewardVO.RewardDetailVO;
 import org.example.common.VO.AIlRewardVO.RewardVO;
 import org.example.rewardservice.service.RewardService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/task")
@@ -30,14 +33,14 @@ public class RewardController {
 
     //5.2
     @GetMapping("/list")
-    public Result rewardList(@RequestBody TaskListDTO dto) {
+    public Result rewardList( TaskListDTO dto) {
         Long id = UserHolder.getUser().getId();
         PageVO<RewardVO> vo = rewardService.rewardList(id, dto);
         return Result.success(vo);
     }
     //    5.3
     @GetMapping("/{id}")
-    public Result detail(@RequestParam Long id){
+    public Result detail(@PathVariable Long id){
         RewardDetailVO vo = rewardService.detail(id);
         return Result.success(vo);
     }
@@ -68,10 +71,15 @@ public class RewardController {
         return Result.success(vo);
     }
     //5.8
-
+    @GetMapping("/recommend")
+    public Result<List<GoodsVO>> recommend(){
+        Long userId = UserHolder.getUser().getId();
+        List<GoodsVO> vo=rewardService.getAiRecommendGoods(userId);
+        return Result.success(vo);
+    }
     //5.9
     @GetMapping("/points/records")
-    public Result records(@RequestBody PointsDTO dto){
+    public Result records(PointsDTO dto){
         Long userId = UserHolder.getUser().getId();
     PageVO<PointsVO> vo = rewardService.points(dto,userId);
      return Result.success(vo);

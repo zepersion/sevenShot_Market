@@ -35,5 +35,7 @@ public interface GoodsService {
     void SeckillPreload();
 
 
+    List<GoodsVO> getGoodsVoByIds(List<Long> ids);
 
+    List<GoodsVO> getValidOnSaleGoods();
 }

@@ -74,6 +74,28 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
+    public List<GoodsVO> getGoodsVoByIds(List<Long> ids) {
+        List<Goods> goods = goodsMapper.selectByIds(ids);
+        List<GoodsVO> collect = goods.stream().map(goods1 -> {
+            GoodsVO goodsVO = new GoodsVO();
+            BeanUtils.copyProperties(goods1, goodsVO);
+            return goodsVO;
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
+    public List<GoodsVO> getValidOnSaleGoods() {
+        List<Goods> list = lambdaQuery().orderByAsc(Goods::getHotScore).list();
+        List<GoodsVO> collect = list.stream().map(goods -> {
+            GoodsVO goodsVO = new GoodsVO();
+            BeanUtils.copyProperties(goods, goodsVO);
+            return goodsVO;
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
     public GoodsPublishVO publish(GoodsPublishDTO dto) {
         UserDTO user = UserHolder.getUser();
         Long userId = user.getId();
@@ -101,7 +123,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         GoodsPublishMQMessage msg = new GoodsPublishMQMessage();
        ;
         msg.setTitle(dto.getTitle());
-
+        msg.setId(goodsId);
         msg.setDescription(dto.getDescription());
 
         goodsProducer.goods_publish(msg);
@@ -206,7 +228,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         Page<Goods> goodsInfo = new Page<>(page, size);
         //查询:根据id查询并根据创建时间倒叙排序
         LambdaQueryWrapper<Goods> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Goods::getId, id);
+        wrapper.eq(Goods::getSellerId, id);
         wrapper.orderByDesc(Goods::getCreateTime);
         //分页查询
         Page<Goods> goodsPage=goodsMapper.selectPage(goodsInfo,wrapper);
@@ -284,7 +306,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
        //categoryId内存过滤
         Long categoryId = dto.getCategoryId();
         if(categoryId!=null){
-          sortedList=  sortedList.stream().filter(e->e.equals(categoryId)).collect(Collectors.toList());
+          sortedList=  sortedList.stream().filter(e->e.getCategoryId().equals(categoryId)).collect(Collectors.toList());
         }
         List<HotRankVO> voList = new ArrayList<>();
         for(int i=0; i<sortedList.size(); i++){
@@ -304,7 +326,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public SeckillGoodsDataVO seckillList() {
         //vo
         SeckillGoodsDataVO vo = new SeckillGoodsDataVO();
-        SeckillGoodsObjectVO objectVO = new SeckillGoodsObjectVO();
+
         //key
         String listKey=SECKILL_LIST_KEY;
 
@@ -320,6 +342,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 .list();
         List<SeckillGoodsObjectVO> objlist = goodsList.stream().map(goods ->
                 {String soldKey=SECKILL_SOLDCOUNT_KEY+goods.getId();
+                    SeckillGoodsObjectVO objectVO = new SeckillGoodsObjectVO();
                     Long count = stringRedisTemplate.opsForValue().increment(soldKey,1);
                     objectVO.setGoodsId(goods.getId());
                     objectVO.setTitle(goods.getTitle());

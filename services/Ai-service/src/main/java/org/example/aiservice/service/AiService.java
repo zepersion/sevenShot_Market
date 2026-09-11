@@ -13,4 +13,6 @@ public interface AiService {
     GoodsEstimateVO estimate(AiGoodsEstimateDTO dto);
 
     AiclassifyVO classify(String title, String description);
+
+    String recommend(String text);
 }

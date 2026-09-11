@@ -53,7 +53,7 @@ private ChatModel chatModel;
         //查缓存
         String cacheKey=AI_COPYWRITING_KEY+dto.getCategoryId()+":"+dto.getKeywords();
         String s = stringRedisTemplate.opsForValue().get(cacheKey);
-        if(!s.isEmpty()||s!=null){
+        if(s != null && !s.isEmpty()){
             log.info("{}",s);
           return  JSONUtil.toBean(s, AiGoodsTextVO.class);
         }
@@ -71,7 +71,7 @@ private ChatModel chatModel;
             default -> "详细"; }
                 : "详细";
 
-        String userInfo=String.format("分类ID:%d, 关键词:%s, 原价:%s, 售价:%s, 成色:%s, 风格:%s",dto.getStyle(),dto.getCategoryId(),dto.getKeywords(),dto.getDegree(),  degreeName, styleName);
+        String userInfo=String.format("分类ID:%d, 关键词:%s, 售价:%s, 成色:%s, 风格:%s",dto.getCategoryId(),dto.getKeywords(),dto.getSellingPrice(),degreeName,styleName);
 
 
         String content = chatModel
@@ -93,7 +93,7 @@ private ChatModel chatModel;
     public GoodsEstimateVO estimate(AiGoodsEstimateDTO dto) {
         String cacheKey=AI_ESTIMATE_KEY+":"+dto.getCategoryId()+dto.getBrand();
         String value = stringRedisTemplate.opsForValue().get(cacheKey);
-        if(!value.isEmpty()||value!=null){
+        if(value != null && !value.isEmpty()){
             log.info("返回{}",value);
         return JSONUtil.toBean(value, GoodsEstimateVO.class);
         }
@@ -105,12 +105,12 @@ private ChatModel chatModel;
             case 4 -> "明显使用痕迹";
             default -> "未知";
         };
-        String userInfo=String.format("分类ID:%d, 型号:%s, 成色:%s, 品牌:%s, 原价:%ld, 购买时间:%Y-%m-%d,补充描述:%s,成色数字代表的含义:%s",
+        String userInfo=String.format("分类ID:%d, 型号:%s, 成色:%s, 品牌:%s, 原价:%s, 购买时间:%s,补充描述:%s,成色数字代表的含义:%s",
                dto.getCategoryId(),dto.getModel(),
                 dto.getDegree(), dto.getBrand(),dto.getOriginalPrice(),dto.getPurchaseDate(),dto.getDescription(),degreeName);
-        var prompt = List.of(new SystemMessage(AI_ESTIMETE_PROMPT),
-        new UserMessage(userInfo));
-        String content = chatModel.call(new Prompt((Message) prompt))
+
+        String content = chatModel.call(new Prompt( List.of(new SystemMessage(AI_ESTIMETE_PROMPT),
+                        new UserMessage(userInfo))))
                 .getResult()
                 .getOutput()
                 .getContent();
@@ -119,12 +119,12 @@ private ChatModel chatModel;
         stringRedisTemplate.opsForValue().set(cacheKey,content,AI_CACHE_TTL, TimeUnit.MINUTES);
         return JSONUtil.toBean(content, GoodsEstimateVO.class);
     }
-    @SentinelResource(value = "classify",blockHandler = " classifyFallback")
+    @SentinelResource(value = "classify",blockHandler = "classifyFallback")
     @Override
     public AiclassifyVO classify(String title, String description) {
         String cacheKey=AI_CLASSIFY_KEY+":"+title;
         String value = stringRedisTemplate.opsForValue().get(cacheKey);
-        if(!value.isEmpty()||value!=null){
+        if(value != null && !value.isEmpty()){
             log.info("返回{}",value);
             return JSONUtil.toBean(value, AiclassifyVO.class);
         }
@@ -140,6 +140,15 @@ private ChatModel chatModel;
         stringRedisTemplate.opsForValue().set(cacheKey,content,AI_CACHE_TTL, TimeUnit.MINUTES);
 
         return JSONUtil.toBean(content, AiclassifyVO.class);
+    }
+
+    @Override
+    public String recommend(String text) {
+        String content = chatModel.call(new Prompt(List.of(
+                new SystemMessage(AI_RECOMMEND_PROMPT),
+                new UserMessage(text)
+        ))).getResult().getOutput().getContent();
+        return content;
     }
 
     //熔断兜底

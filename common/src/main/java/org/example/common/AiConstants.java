@@ -28,4 +28,41 @@ public class AiConstants {
             "    \"categoryName\": \"数码产品/平板\",\n" +
             "    \"tags\": [\"iPad\", \"平板\", \"苹果\", \"九成新\"],\n" +
             "    \"confidence\": 0.95"+"只返回json格式 不返回其他的东西";
+    public static final  String AI_RECOMMEND_PROMPT="你是二手闲置平台推荐引擎。\n" +
+            "用户悬赏需求：%s\n" +
+            "下面是平台闲置商品列表。请分析每个商品和用户需求的语义相似度，给0~100分，分数越高越匹配。\n" +
+            "只返回匹配商品ID和分数，按分数降序，输出JSON数组，不要多余文字。\n" +
+            "格式示例：{\n" +
+            "  \"code\": 200,\n" +
+            "  \"msg\": \"success\",\n" +
+            "  \"data\": {\n" +
+            "    \"goodsToTask\": [\n" +
+            "      {\n" +
+            "        \"goodsId\": 20001,\n" +
+            "        \"goodsTitle\": \"iPad Air 5 出售\",\n" +
+            "        \"matchedTasks\": [\n" +
+            "          {\n" +
+            "            \"taskId\": 40001,\n" +
+            "            \"taskTitle\": \"收一台iPad\",\n" +
+            "            \"matchScore\": 0.92,\n" +
+            "            \"matchReason\": \"商品类型与需求高度匹配\"\n" +
+            "          }\n" +
+            "        ]\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"taskToGoods\": [\n" +
+            "      {\n" +
+            "        \"taskId\": 40002,\n" +
+            "        \"taskTitle\": \"求购考研资料\",\n" +
+            "        \"matchedGoods\": [\n" +
+            "          {\n" +
+            "            \"goodsId\": 20005,\n" +
+            "            \"goodsTitle\": \"考研数学全套资料\",\n" +
+            "            \"matchScore\": 0.88\n" +
+            "          }\n" +
+            "        ]\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}";
 }

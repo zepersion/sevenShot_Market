@@ -64,6 +64,7 @@ public class RedisConstants {
     public static final String AI_COPYWRITING_KEY = "ai:copywriting:";
     public static final String AI_ESTIMATE_KEY = "ai:estimate:";
     public static final String AI_CLASSIFY_KEY = "ai:classify:";
+    public static final String AI_RECOMMEND_KEY = "ai:recommend:";
     public static final Long AI_CACHE_TTL = 24L; // 24小时
 }
 
