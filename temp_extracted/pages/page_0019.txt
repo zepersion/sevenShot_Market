@@ -1,0 +1,25 @@
+字段 类型 必填 描述
+page Integer 否 页码
+size Integer 否 每页数量
+5.3 悬赏详情
+项目 内容
+接口 GET /api/task/{id}
+鉴权 否
+描述 悬赏任务详情
+5.4 申请接单
+项目 内容
+接口 POST /api/task/apply/{id}
+鉴权 是
+描述 申请接单
+请求参数：
+字段 类型 必填 描述
+message String 否 接单留言
+5.5 发布者选择接单人
+项目 内容
+接口 POST /api/task/select/{taskId}/{acceptId}
+鉴权 是
+描述 发布者从申请者中选择接单人
+5.6 完成任务确认
+项目 内容
+接口 POST /api/task/confirm/{id}
+鉴权 是

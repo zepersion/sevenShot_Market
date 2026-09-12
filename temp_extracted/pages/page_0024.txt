@@ -1,0 +1,31 @@
+项目 内容
+鉴权 是
+描述 AI智能客服对话
+请求参数：
+字段 类型 需要 描述
+sessionId String 否 会话ID，首次传空
+message String 是 用户消息
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"sessionId": "sess_abc123",
+"reply": "您好！关于退款问题，您可以在订单详情页点击...",
+"isTransfer": false,
+"suggestedActions": [
+{ "text": "查看退款流程", "type": "link" },
+{ "text": "联系人工客服", "type": "transfer" }
+]
+}
+}
+降级方案：AI接口异常时，切换到本地关键词匹配知识库回复。
+6.5 AI售后纠纷判定
+项目 内容
+接口 POST /api/ai/aftersale/judge
+鉴权 是（管理员）
+描述 AI辅助判定售后纠纷
+请求参数：
+字段 类型 必填 描述
+afterSaleId Long 是 售后单ID
+返回示例：

@@ -1,6 +1,6 @@
 package org.example.common.utils;
 
-import org.example.common.DTO.AllUserDTO.UserDTO;
+import org.example.common.dto.AllUserDTO.UserDTO;
 
 
 //userholder相当于我们在线程中有一个存独立资料的抽屉

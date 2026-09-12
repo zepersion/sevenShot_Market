@@ -1,0 +1,33 @@
+字段 类型 必填 描述
+month String 否 月份，默认当月，格式：yyyy-MM
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"month": "2024-06",
+"totalSignDays": 20,
+"continuousDays": 5,
+"signedDates": ["01","02","03",..."20"],
+"todaySigned": true
+}
+}
+1.8 关注/取消关注用户
+项目 内容
+接口 POST /api/user/follow/{userId}
+鉴权 是
+描述 关注/取消关注用户（切换）
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"followed": true
+}
+}
+1.9 获取关注/粉丝列表
+项目 内容
+接口 GET /api/user/follow/list
+鉴权 是
+描述 获取我的关注或粉丝列表
+请求参数：

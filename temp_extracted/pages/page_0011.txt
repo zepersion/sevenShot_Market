@@ -1,0 +1,29 @@
+2.9 商品分类列表
+项目 内容
+接口 GET /api/goods/categories
+鉴权 否
+描述 获取商品分类树
+2.10 商品热度排行榜
+项目 内容
+接口 GET /api/goods/ranking/hot
+鉴权 否
+描述 商品热度排行榜（Top N）
+请求参数：
+字段 类型 必填 描述
+top Integer 否 返回数量，默认10
+categoryId Long 否 分类筛选
+数据来源：Redis ZSet ranking:goods:hot
+/api/seckill
+三、秒杀模块
+3.1 秒杀商品列表
+项目 内容
+接口 GET /api/seckill/list
+鉴权 否
+描述 获取当前进行中的秒杀商品
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"seckillStartTime": "2024-06-20 20:00:00",
+"seckillEndTime": "2024-06-20 22:00:00",

@@ -3,9 +3,10 @@ package org.example.user.service.impl;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.example.common.vo.UserAllVO.FollowUserVO;
 import org.example.common.utils.UserHolder;
-import FollowUserVO;
-import org.example.common.VO.PageVO;
+
+import org.example.common.vo.PageVO;
 import org.example.user.entity.User;
 import org.example.user.entity.UserFollow;
 import org.example.user.mapper.UserFollowMapper;

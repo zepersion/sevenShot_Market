@@ -1,7 +1,7 @@
 package org.example.user.service;
 
-import org.example.common.DTO.AllUserDTO.SignInDTO;
-import org.example.common.VO.UserAllVO.SignInVO;
+import org.example.common.dto.AllUserDTO.SignInDTO;
+import org.example.common.vo.UserAllVO.SignInVO;
 
 public interface UserSignService {
     SignInVO sign(SignInDTO dto);

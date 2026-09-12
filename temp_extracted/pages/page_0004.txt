@@ -1,0 +1,29 @@
+项目 内容
+描述 更新用户基本信息
+请求参数：
+字段 类型 必填 描述
+nickname String 否 昵称
+avatar String 否 头像URL
+gender Integer 否 性别：0未知 1男 2女
+school String 否 学校
+1.6 每日签到
+项目 内容
+接口 POST /api/user/sign
+鉴权 是
+描述 每日签到，获得积分奖励
+返回示例：
+{
+"code": 200,
+"msg": "签到成功",
+"data": {
+"continuousDays": 7,
+"pointsReward": 15,
+"todaySigned": true
+}
+}
+1.7 获取签到记录
+项目 内容
+接口 GET /api/user/sign/record
+鉴权 是
+描述 获取当月签到情况
+请求参数：

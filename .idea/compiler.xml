@@ -17,8 +17,8 @@
           <entry name="D:/repository/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
         <module name="goods-service" />
-        <module name="order-service" />
         <module name="user-service" />
+        <module name="order-service" />
         <module name="common" />
         <module name="ai-service" />
         <module name="reward-service" />

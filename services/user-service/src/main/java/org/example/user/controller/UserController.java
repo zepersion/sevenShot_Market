@@ -4,11 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-import org.example.common.DTO.AllUserDTO.*;
+
 import org.example.common.Result;
-import org.example.common.VO.*;
-import org.example.common.VO.UserAllVO.SignInVO;
-import org.example.common.VO.UserAllVO.UserLoginVo;
+
+import org.example.common.dto.AllUserDTO.*;
+import org.example.common.vo.PageVO;
+import org.example.common.vo.UserAllVO.FollowUserVO;
+import org.example.common.vo.UserAllVO.RegisterVO;
+import org.example.common.vo.UserAllVO.SignInVO;
+import org.example.common.vo.UserAllVO.UserLoginVo;
 import org.example.user.entity.User;
 import org.example.user.entity.UserCredit;
 import org.example.user.entity.UserFollow;
@@ -94,7 +98,7 @@ public class UserController {
     }
     @GetMapping("/follow/list")
     public  Result<PageVO<UserFollow>> followList(@RequestParam Integer type,
-                              @RequestParam Integer page,
+                                                  @RequestParam Integer page,
                                                   @RequestParam Integer size) {
         Long userId = UserHolder.getUser().getId();
         PageVO<UserFollow> vo = userFollowService.getFollowList(page,type, userId,size);

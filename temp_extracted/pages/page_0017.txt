@@ -1,0 +1,24 @@
+4.7 确认收货
+项目 内容
+接口 POST /api/order/receive/{id}
+鉴权 是
+描述 买家确认收货，订单完成
+触发动作：确认收货后，MQ异步处理：更新卖家信用分、推送通知、商品标记已售。
+4.8 申请售后
+项目 内容
+接口 POST /api/order/aftersale/apply
+鉴权 是
+描述 买家申请售后
+请求参数：
+字段 类型 必填 描述
+orderId Long 是 订单ID
+type Integer 是 类型：1仅退款 2退货退款
+reason String 是 售后原因
+description String 是 详细描述
+images List<String> 否 凭证图片
+refundAmount BigDecimal 是 退款金额
+4.9 售后详情
+项目 内容
+接口 GET /api/order/aftersale/{id}
+鉴权 是
+描述 售后详情（含AI判定意见）

@@ -1,0 +1,42 @@
+"title": "九成新iPad Air 5 64G WiFi版",
+"description": "自用iPad Air 5，使用一年，无磕碰无划痕...",
+"categoryId": 3,
+"categoryName": "数码产品",
+"originalPrice": 4999.00,
+"sellingPrice": 3500.00,
+"coverImage": "http://xxx/cover.jpg",
+"images": ["http://xxx/1.jpg","http://xxx/2.jpg"],
+"degree": 2,
+"degreeName": "几乎全新",
+"stock": 1,
+"tags": ["iPad","平板","苹果"],
+"isSeckill": false,
+"hotScore": 1580,
+"viewCount": 320,
+"likeCount": 45,
+"favoriteCount": 28,
+"seller": {
+"userId": 10001,
+"nickname": "小明",
+"avatar": "http://xxx/avatar.jpg",
+"creditScore": 95,
+"creditLevel": 2,
+"school": "XX大学",
+"goodsCount": 12,
+"soldCount": 8
+},
+"isLiked": false,
+"isFavorited": false,
+"isFollowed": false,
+"createTime": "2024-06-15 14:30:00"
+}
+}
+2.4 点赞/取消点赞
+项目 内容
+接口 POST /api/goods/like/{id}
+鉴权 是
+描述 点赞/取消点赞商品（切换）
+2.5 收藏/取消收藏
+项目 内容
+接口 POST /api/goods/favorite/{id}
+鉴权 是

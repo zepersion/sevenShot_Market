@@ -2,23 +2,22 @@ package org.example.rewardservice.service.Impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.DTO.AllRewardDTO.PointsDTO;
-import org.example.common.DTO.AllRewardDTO.RewardPublishDTO;
-import org.example.common.DTO.AllRewardDTO.TaskListDTO;
+import org.example.common.dto.AllRewardDTO.PointsDTO;
+import org.example.common.dto.AllRewardDTO.RewardPublishDTO;
+import org.example.common.dto.AllRewardDTO.TaskListDTO;
 import org.example.common.Result;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
 import org.example.common.utils.UserHolder;
-import org.example.common.VO.PageVO;
-import org.example.common.VO.AIlRewardVO.PointsVO;
-import org.example.common.VO.AIlRewardVO.RewardDetailVO;
-import org.example.common.VO.AIlRewardVO.RewardVO;
+import org.example.common.vo.PageVO;
+import org.example.common.vo.AIlRewardVO.PointsVO;
+import org.example.common.vo.AIlRewardVO.RewardDetailVO;
+import org.example.common.vo.AIlRewardVO.RewardVO;
 import org.example.rewardservice.FeignClient.AiFeignClient;
 import org.example.rewardservice.FeignClient.GoodsFeignClient;
 import org.example.rewardservice.entity.Reward;
@@ -40,8 +39,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static org.example.common.RedisConstants.*;
 
 @Slf4j
 @Service

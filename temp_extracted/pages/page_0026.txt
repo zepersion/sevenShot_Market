@@ -1,0 +1,26 @@
+7.2 标记已读
+项目 内容
+接口 PUT /api/notification/read/{id}
+鉴权 是
+描述 标记单条通知已读
+7.3 全部已读
+项目 内容
+接口 PUT /api/notification/read/all
+鉴权 是
+描述 标记所有通知已读
+7.4 未读数量
+项目 内容
+接口 GET /api/notification/unread/count
+鉴权 是
+描述 获取未读通知数量
+/api/common
+八、公共接口
+8.1 文件上传
+项目 内容
+接口 POST /api/common/upload
+鉴权 是
+描述 图片/文件上传（返回URL）
+请求参数：
+字段 类型 必填 描述
+file MultipartFile 是 文件
+type String 是 类型：avatar/goods/task/aftersale

@@ -2,7 +2,7 @@ package org.example.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.example.common.VO.PageVO;
+import org.example.common.vo.PageVO;
 import org.example.user.entity.User;
 import org.example.user.entity.UserCredit;
 import org.example.user.mapper.UserCreditMapper;

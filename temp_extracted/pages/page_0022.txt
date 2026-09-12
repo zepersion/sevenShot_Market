@@ -1,0 +1,31 @@
+字段 类型 必填 描述
+sellingPrice BigDecimal 是 售价
+degree Integer 是 成色
+style Integer 否 文案风格：1简洁 2详细 3活泼
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"title": "【九成新】iPad Air 5 64G WiFi版 自用爱惜 配件齐全",
+"description": "## 商品简介\n自用iPad Air 5，购买于2023年3月...\n\n## 成色说明\n整
+体成色95新...\n\n## 配件清单\n- 原装充电器...\n\n## 交易说明\n支持面交验货，校内优先~",
+"tags": ["iPad", "平板", "苹果", "九成新"]
+}
+}
+优化：相同关键词 + 分类的请求做Redis缓存，24小时内直接返回缓存结果，降低API调用成本。
+6.2 AI二手估价
+项目 内容
+接口 POST /api/ai/goods/estimate
+鉴权 是
+描述 AI评估二手商品建议售价
+请求参数：
+字段 类型 必填 描述
+categoryId Long 是 分类ID
+brand String 否 品牌
+model String 否 型号
+originalPrice BigDecimal 是 原价
+degree Integer 是 成色
+purchaseDate String 否 购买时间
+description String 否 补充描述
+返回示例：

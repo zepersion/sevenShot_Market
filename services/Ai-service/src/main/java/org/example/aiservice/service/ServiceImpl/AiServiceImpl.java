@@ -10,12 +10,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.aiservice.service.AiService;
-import org.example.common.DTO.aiDTO.AiGoodsEstimateDTO;
-import org.example.common.DTO.aiDTO.AiGoodsTextDTO;
-import org.example.common.VO.AiVO.AiGoodsTextVO;
-import org.example.common.VO.AiVO.AiclassifyVO;
-import org.example.common.VO.AiVO.GoodsEstimateVO;
-import org.springframework.ai.chat.messages.Message;
+import org.example.common.dto.aiDTO.AiGoodsEstimateDTO;
+import org.example.common.dto.aiDTO.AiGoodsTextDTO;
+import org.example.common.vo.AiVO.AiGoodsTextVO;
+import org.example.common.vo.AiVO.AiclassifyVO;
+import org.example.common.vo.AiVO.GoodsEstimateVO;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
@@ -176,17 +175,5 @@ private ChatModel chatModel;
 
     }
 
-    @Override
-    public String recommend(String text) {
-        String systemPrompt = "你是校园二手商品推荐助手，根据用户输入的关键词推荐相关商品，返回推荐文案。";
-        String content = chatModel.call(new Prompt(List.of(
-                new SystemMessage(systemPrompt),
-                new UserMessage(text)
-        )))
-                .getResult()
-                .getOutput()
-                .getContent();
-        log.info("AI推荐结果:{}", content);
-        return content;
-    }
+
 }

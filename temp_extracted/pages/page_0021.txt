@@ -1,0 +1,36 @@
+}
+]
+}
+],
+"taskToGoods": [
+{
+"taskId": 40002,
+"taskTitle": "求购考研资料",
+"matchedGoods": [
+{
+"goodsId": 20005,
+"goodsTitle": "考研数学全套资料",
+"matchScore": 0.88
+}
+]
+}
+]
+}
+}
+5.10 积分明细
+项目 内容
+接口 GET /api/task/points/records
+鉴权 是
+描述 积分流水记录
+/api/ai
+六、AI模块
+6.1 AI生成商品文案
+项目 内容
+接口 POST /api/ai/goods/copywriting
+鉴权 是
+描述 AI自动生成商品标题和描述文案
+请求参数：
+字段 类型 必填 描述
+categoryId Long 是 商品分类ID
+keywords String 是 关键词/简单描述
+originalPrice BigDecimal 是 原价

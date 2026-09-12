@@ -2,12 +2,12 @@ package org.example.aiservice.Controller;
 
 import jakarta.annotation.Resource;
 import org.example.aiservice.service.AiService;
-import org.example.common.DTO.aiDTO.AiGoodsEstimateDTO;
+import org.example.common.dto.aiDTO.AiGoodsEstimateDTO;
 import org.example.common.Result;
-import org.example.common.DTO.aiDTO.AiGoodsTextDTO;
-import org.example.common.VO.AiVO.AiGoodsTextVO;
-import org.example.common.VO.AiVO.AiclassifyVO;
-import org.example.common.VO.AiVO.GoodsEstimateVO;
+import org.example.common.dto.aiDTO.AiGoodsTextDTO;
+import org.example.common.vo.AiVO.AiGoodsTextVO;
+import org.example.common.vo.AiVO.AiclassifyVO;
+import org.example.common.vo.AiVO.GoodsEstimateVO;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;

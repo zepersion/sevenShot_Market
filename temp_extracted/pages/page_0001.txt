@@ -1,0 +1,31 @@
+校园闲置互助服务平台 - 接口文档
+基础URL： /api
+鉴权方式：Bearer Token（Header: Authorization: Bearer {token} ）
+返回格式：统一JSON格式
+{
+"code": 200,
+"msg": "success",
+"data": {}
+}
+/api/user
+一、用户模块
+1.1 发送验证码
+项目 内容
+接口 POST /api/user/code
+鉴权 否
+描述 发送短信/邮箱验证码
+请求参数：
+字段 类型 必填 描述
+phone String 是 手机号
+type Integer 是 类型：1注册 2登录 3找回密码
+返回示例：
+{
+"code": 200,
+"msg": "验证码已发送",
+"data": null
+}
+1.2 用户注册
+项目 内容
+接口 POST /api/user/register
+鉴权 否
+描述 用户注册

@@ -1,7 +1,7 @@
 package org.example.rewardservice.FeignClient;
 
 import org.example.common.Result;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

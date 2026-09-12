@@ -1,0 +1,39 @@
+"coverImage": "http://xxx/cover.jpg",
+"price": 3500.00,
+"quantity": 1
+},
+"seller": {
+"userId": 10001,
+"nickname": "小明",
+"avatar": "http://xxx/avatar.jpg",
+"phone": "138****8888"
+},
+"buyer": {
+"userId": 10002,
+"nickname": "小红",
+"avatar": "http://xxx/avatar2.jpg",
+"phone": "139****9999"
+},
+"expireTime": "2024-06-20 16:00:00",
+"createTime": "2024-06-20 15:30:00",
+"payTime": null,
+"deliverTime": null,
+"receiveTime": null,
+"finishTime": null
+}
+}
+4.3 我的订单列表
+项目 内容
+接口 GET /api/order/list
+鉴权 是
+描述 我的订单列表
+请求参数：
+必
+字段 类型 描述
+填
+role Integer 是 角色：1我买的 2我卖的
+状态筛选：0全部 1待支付 2待发货 3待收货 4已完成 5已取消 6售
+status Integer 否
+后中
+page Integer 否 页码
+size Integer 否 每页数量

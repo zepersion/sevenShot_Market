@@ -1,0 +1,28 @@
+/api/task
+五、悬赏互助模块
+5.1 发布悬赏
+项目 内容
+接口 POST /api/task/publish
+鉴权 是
+描述 发布悬赏任务
+请求参数：
+字段 类型 必填 描述
+title String 是 任务标题
+description String 是 任务描述
+categoryId Long 是 分类ID
+reward BigDecimal 是 悬赏金额
+location String 是 任务地点
+deadline String 是 截止时间
+tags List<String> 否 标签
+5.2 悬赏列表
+项目 内容
+接口 GET /api/task/list
+鉴权 否
+描述 悬赏任务列表
+请求参数：
+字段 类型 必填 描述
+keyword String 否 关键词
+categoryId Long 否 分类ID
+minReward BigDecimal 否 最低赏金
+maxReward BigDecimal 否 最高赏金
+sortType Integer 否 排序：1最新 2赏金高到低 3赏金低到高 4热度

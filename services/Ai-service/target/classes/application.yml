@@ -1,0 +1,42 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: ai-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/campus_idle_platform?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        port: 8719
+  ai:
+    openai:
+      api-key: sk-ws-H.PDPDLLH.uEyI.MEYCIQDWkrP8zSnY_0jnpy-osJU8j72x5CyJl-lZShF3_bLSvAIhAO__MfVCCBaffSMD6TevFVZsmaY5IXvFLHPFT9_bnSY2
+      base-url: https://ws-k99yk4xg1oxssw9j.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+      chat:
+        options:
+          model: Qwen3.8-Max
+          temperature: 0.7
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true

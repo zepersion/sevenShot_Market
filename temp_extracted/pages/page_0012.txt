@@ -1,0 +1,38 @@
+"list": [
+{
+"goodsId": 20001,
+"title": "秒杀：iPad Air 5",
+"coverImage": "http://xxx/cover.jpg",
+"originalPrice": 4999.00,
+"seckillPrice": 2999.00,
+"seckillStock": 10,
+"soldCount": 3,
+"startTime": "2024-06-20 20:00:00",
+"endTime": "2024-06-20 22:00:00"
+}
+]
+}
+}
+3.2 秒杀下单
+项目 内容
+接口 POST /api/seckill/order/{goodsId}
+鉴权 是
+描述 秒杀下单（核心高并发接口）
+限流 单用户每秒最多1次请求
+请求参数：
+字段 类型 必填 描述
+goodsId Long 是 商品ID（路径参数）
+quantity Integer 否 数量，默认1
+tradeWay Integer 是 交易方式：1面交 2快递
+address String 否 收货地址（快递时必填）
+message String 否 买家留言
+返回示例：
+{
+"code": 200,
+"msg": "秒杀请求已提交",
+"data": {
+"orderNo": "SK20240620200001001",
+"status": 0
+}
+}
+秒杀流程：

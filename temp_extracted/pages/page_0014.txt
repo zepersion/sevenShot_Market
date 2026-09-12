@@ -1,0 +1,39 @@
+字段 类型 必填 描述
+quantity Integer 否 数量，默认1
+tradeWay Integer 是 交易方式：1面交 2快递
+address String 否 收货地址
+message String 否 买家留言
+返回示例：
+{
+"code": 200,
+"msg": "下单成功",
+"data": {
+"orderId": 30001,
+"orderNo": "OD202406201530001",
+"totalAmount": 3500.00,
+"status": 1,
+"expireTime": "2024-06-20 16:00:00"
+}
+}
+说明：下单后发送延迟消息（30分钟），超时未支付自动取消订单并归还库存。
+4.2 订单详情
+项目 内容
+接口 GET /api/order/{id}
+鉴权 是
+描述 订单详情
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"orderId": 30001,
+"orderNo": "OD202406201530001",
+"status": 1,
+"statusName": "待支付",
+"totalAmount": 3500.00,
+"isSeckill": false,
+"tradeWay": 1,
+"buyerMessage": "麻烦面交时带充电器",
+"goods": {
+"id": 20001,
+"title": "九成新iPad Air 5",

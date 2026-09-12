@@ -2,9 +2,9 @@ package org.example.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.DTO.AllUserDTO.SignInDTO;
+import org.example.common.dto.AllUserDTO.SignInDTO;
 import org.example.common.utils.UserHolder;
-import org.example.common.VO.UserAllVO.SignInVO;
+import org.example.common.vo.UserAllVO.SignInVO;
 import org.example.user.entity.UserSign;
 import org.example.user.mapper.UserSignMapper;
 import org.example.user.service.UserSignService;

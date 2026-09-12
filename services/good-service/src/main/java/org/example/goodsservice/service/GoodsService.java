@@ -2,15 +2,15 @@ package org.example.goodsservice.service;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.example.common.DTO.AllGoodsDTO.GoodsListDTO;
-import org.example.common.DTO.AllGoodsDTO.GoodsPublishDTO;
-import org.example.common.DTO.AllGoodsDTO.HotRankDTO;
-import org.example.common.DTO.AllGoodsDTO.SeckillSaleDTO;
-import org.example.common.VO.*;
-import org.example.common.VO.AllSeckillVO.SeckillGoodsDataVO;
-import org.example.common.VO.GoodsAllVO.GoodsPublishVO;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
-import org.example.common.VO.GoodsAllVO.HotRankVO;
+import org.example.common.dto.AllGoodsDTO.GoodsListDTO;
+import org.example.common.dto.AllGoodsDTO.GoodsPublishDTO;
+import org.example.common.dto.AllGoodsDTO.HotRankDTO;
+import org.example.common.dto.AllGoodsDTO.SeckillSaleDTO;
+import org.example.common.vo.AllSeckillVO.SeckillGoodsDataVO;
+import org.example.common.vo.GoodsAllVO.GoodsPublishVO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
+import org.example.common.vo.GoodsAllVO.HotRankVO;
+import org.example.common.vo.PageVO;
 
 import java.util.List;
 

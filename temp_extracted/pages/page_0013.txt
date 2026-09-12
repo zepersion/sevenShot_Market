@@ -1,0 +1,32 @@
+1. 接口限流（Redisson RateLimiter）
+2. 校验秒杀时间、库存
+3. Redis Lua脚本预减库存 + 防重复购买（Set集合记录已购买用户）
+4. 下单请求发送到RabbitMQ削峰
+5. 消费者异步创建订单、扣减DB库存
+6. 返回订单号，前端轮询订单状态
+3.3 秒杀结果查询
+项目 内容
+接口 GET /api/seckill/result/{orderNo}
+鉴权 是
+描述 轮询秒杀订单创建结果
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"orderNo": "SK20240620200001001",
+"status": 1, // 0处理中 1成功 2失败
+"orderId": 30001,
+"failReason": null
+}
+}
+/api/order
+四、订单模块
+4.1 创建普通订单
+项目 内容
+接口 POST /api/order/create
+鉴权 是
+描述 普通商品下单
+请求参数：
+字段 类型 必填 描述
+goodsId Long 是 商品ID

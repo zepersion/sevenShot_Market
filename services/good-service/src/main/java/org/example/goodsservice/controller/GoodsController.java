@@ -2,18 +2,19 @@ package org.example.goodsservice.controller;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.example.common.DTO.AllGoodsDTO.*;
+
 import org.example.common.Result;
-import org.example.common.VO.*;
-import org.example.common.VO.GoodsAllVO.GoodsCategoryVO;
-import org.example.common.VO.GoodsAllVO.GoodsPublishVO;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
-import org.example.common.VO.GoodsAllVO.HotRankVO;
+import org.example.common.dto.AllGoodsDTO.*;
+import org.example.common.vo.GoodsAllVO.GoodsCategoryVO;
+import org.example.common.vo.GoodsAllVO.GoodsPublishVO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
+import org.example.common.vo.GoodsAllVO.HotRankVO;
+import org.example.common.vo.PageVO;
+
 import org.example.goodsservice.service.GoodsCategoryService;
 import org.example.goodsservice.service.GoodsFavoriteService;
 import org.example.goodsservice.service.GoodsLikeService;
 import org.example.goodsservice.service.GoodsService;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

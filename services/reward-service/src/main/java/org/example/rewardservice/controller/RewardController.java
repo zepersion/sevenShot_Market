@@ -2,16 +2,16 @@ package org.example.rewardservice.controller;
 
 import jakarta.annotation.Resource;
 import org.example.common.Result;
-import org.example.common.DTO.AllRewardDTO.PointsDTO;
-import org.example.common.DTO.AllRewardDTO.RewardPublishDTO;
-import org.example.common.DTO.AllRewardDTO.TaskApplyDTO;
-import org.example.common.DTO.AllRewardDTO.TaskListDTO;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
+import org.example.common.dto.AllRewardDTO.PointsDTO;
+import org.example.common.dto.AllRewardDTO.RewardPublishDTO;
+import org.example.common.dto.AllRewardDTO.TaskApplyDTO;
+import org.example.common.dto.AllRewardDTO.TaskListDTO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
 import org.example.common.utils.UserHolder;
-import org.example.common.VO.PageVO;
-import org.example.common.VO.AIlRewardVO.PointsVO;
-import org.example.common.VO.AIlRewardVO.RewardDetailVO;
-import org.example.common.VO.AIlRewardVO.RewardVO;
+import org.example.common.vo.PageVO;
+import org.example.common.vo.AIlRewardVO.PointsVO;
+import org.example.common.vo.AIlRewardVO.RewardDetailVO;
+import org.example.common.vo.AIlRewardVO.RewardVO;
 import org.example.rewardservice.service.RewardService;
 import org.springframework.web.bind.annotation.*;
 

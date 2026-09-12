@@ -1,0 +1,28 @@
+{
+"code": 200,
+"msg": "success",
+"data": {
+"suggestion": "支持买家退款申请",
+"confidence": 0.82,
+"analysis": "根据双方描述和图片证据，商品确实存在...",
+"keyPoints": ["商品与描述不符", "卖家承认瑕疵"],
+"suggestedRefund": 3500.00
+}
+}
+6.6 AI对话历史
+项目 内容
+接口 GET /api/ai/chat/history/{sessionId}
+鉴权 是
+描述 获取会话历史记录
+/api/notification
+七、通知模块
+7.1 通知列表
+项目 内容
+接口 GET /api/notification/list
+鉴权 是
+描述 获取通知列表
+请求参数：
+字段 类型 必填 描述
+type Integer 否 类型筛选：0全部 1系统 2订单 3悬赏 4互动
+page Integer 否 页码
+size Integer 否 每页数量

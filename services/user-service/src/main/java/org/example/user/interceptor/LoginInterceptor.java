@@ -3,7 +3,7 @@ package org.example.user.interceptor;
 import cn.hutool.core.bean.BeanUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.common.DTO.AllUserDTO.UserDTO;
+import org.example.common.dto.AllUserDTO.UserDTO;
 import org.example.common.utils.UserHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 

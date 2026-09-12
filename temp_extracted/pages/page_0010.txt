@@ -1,0 +1,22 @@
+项目 内容
+描述 收藏/取消收藏商品（切换）
+2.6 我的收藏列表
+项目 内容
+接口 GET /api/goods/favorite/list
+鉴权 是
+描述 我收藏的商品列表
+2.7 我发布的商品
+项目 内容
+接口 GET /api/goods/my/list
+鉴权 是
+描述 我发布的商品列表
+请求参数：
+字段 类型 必填 描述
+status Integer 否 状态筛选：0全部 1在售 2已售 3下架
+page Integer 否 页码
+size Integer 否 每页数量
+2.8 下架商品
+项目 内容
+接口 POST /api/goods/offline/{id}
+鉴权 是
+描述 下架自己发布的商品

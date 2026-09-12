@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.Message.AllGoodsMsg.GoodsLikeMessage;
-import org.example.common.DTO.AllGoodsDTO.GoodLikeDTO;
+import org.example.common.dto.AllGoodsDTO.GoodLikeDTO;
 import org.example.common.utils.UserHolder;
 import org.example.goodsservice.entity.Goods;
 import org.example.goodsservice.entity.GoodsLike;

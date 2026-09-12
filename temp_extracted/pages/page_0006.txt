@@ -1,0 +1,27 @@
+字段 类型 必填 描述
+type Integer 是 类型：1关注列表 2粉丝列表
+page Integer 否 页码，默认1
+size Integer 否 每页数量，默认20
+1.10 信用分记录
+项目 内容
+接口 GET /api/user/credit/records
+鉴权 是
+描述 获取信用分变动记录
+请求参数：
+字段 类型 必填 描述
+page Integer 否 页码，默认1
+size Integer 否 每页数量，默认20
+/api/goods
+二、商品模块
+2.1 发布商品
+项目 内容
+接口 POST /api/goods/publish
+鉴权 是
+描述 发布闲置商品
+请求参数：
+字段 类型 必填 描述
+title String 是 商品标题
+description String 是 商品描述
+categoryId Long 是 分类ID
+originalPrice BigDecimal 是 原价
+sellingPrice BigDecimal 是 售价

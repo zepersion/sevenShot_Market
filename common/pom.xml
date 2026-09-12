@@ -12,6 +12,7 @@
     <artifactId>common</artifactId>
     <name>Common</name>
 
+    <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -41,6 +42,7 @@
             <artifactId>lombok</artifactId>
             <version>1.18.42</version>
             <scope>provided</scope>
+
         </dependency>
         <!-- OpenFeign 远程调用 -->
         <dependency>

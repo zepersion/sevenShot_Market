@@ -2,8 +2,8 @@ package org.example.goodsservice.controller;
 
 import jakarta.annotation.Resource;
 import org.example.common.Result;
-import org.example.common.DTO.AllGoodsDTO.SeckillSaleDTO;
-import org.example.common.VO.AllSeckillVO.SeckillGoodsDataVO;
+import org.example.common.dto.AllGoodsDTO.SeckillSaleDTO;
+import org.example.common.vo.AllSeckillVO.SeckillGoodsDataVO;
 import org.example.goodsservice.FeignClient.OrderFeignClient;
 import org.example.goodsservice.service.GoodsService;
 import org.springframework.web.bind.annotation.*;

@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.Message.AllGoodsMsg.GoodsFavoriteMessage;
-import org.example.common.DTO.AllGoodsDTO.GoodsFavoriteDTO;
+import org.example.common.dto.AllGoodsDTO.GoodsFavoriteDTO;
 import org.example.common.utils.UserHolder;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
-import org.example.common.VO.PageVO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
+import org.example.common.vo.PageVO;
 import org.example.goodsservice.entity.Goods;
 import org.example.goodsservice.entity.GoodsFavorite;
 import org.example.goodsservice.mapper.GoodsFavoriteMapper;
@@ -24,7 +24,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.common.RedisConstants.*;
+import static org.example.common.RedisConstants.GOODS_FAVORITE_KEY;
+import static org.example.common.RedisConstants.GOODS_FAVORITE_SET;
 
 @Service
 @Slf4j

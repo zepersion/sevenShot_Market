@@ -1,0 +1,32 @@
+项目 内容
+描述 发布者确认任务完成，结算赏金
+5.7 我发布的悬赏
+项目 内容
+接口 GET /api/task/my/publish
+鉴权 是
+描述 我发布的悬赏列表
+5.8 我接单的悬赏
+项目 内容
+接口 GET /api/task/my/accept
+鉴权 是
+描述 我接单的悬赏列表
+5.9 智能匹配推荐
+项目 内容
+接口 GET /api/task/recommend
+鉴权 是
+描述 AI语义匹配推荐：闲置商品 vs 悬赏需求
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"goodsToTask": [
+{
+"goodsId": 20001,
+"goodsTitle": "iPad Air 5 出售",
+"matchedTasks": [
+{
+"taskId": 40001,
+"taskTitle": "收一台iPad",
+"matchScore": 0.92,
+"matchReason": "商品类型与需求高度匹配"

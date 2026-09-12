@@ -1,0 +1,31 @@
+字段 类型 必填 描述
+coverImage String 是 封面图URL
+images List<String> 是 图片列表
+degree Integer 是 成色：1全新 2几乎全新 3轻微使用 4明显使用
+stock Integer 否 库存，默认1
+tags List<String> 否 标签列表
+isDonation Integer 否 是否公益捐赠：0否 1是
+返回示例：
+{
+"code": 200,
+"msg": "发布成功，正在审核",
+"data": {
+"goodsId": 20001
+}
+}
+流程说明：发布后状态为"待审核"(0)，MQ异步发送AI审核任务，审核通过自动上架(status=1)，不
+通过则标记违规(status=4)并扣信用分。
+2.2 商品列表（检索）
+项目 内容
+接口 GET /api/goods/list
+鉴权 否
+描述 商品列表检索，支持关键词、分类、价格区间、排序
+请求参数：
+字段 类型 必填 描述
+keyword String 否 搜索关键词
+categoryId Long 否 分类ID
+minPrice BigDecimal 否 最低价格
+maxPrice BigDecimal 否 最高价格
+degree Integer 否 成色筛选
+sortType Integer 否 排序：1最新 2价格升序 3价格降序 4热度 5销量
+page Integer 否 页码，默认1

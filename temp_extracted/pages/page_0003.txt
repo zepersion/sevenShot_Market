@@ -1,0 +1,40 @@
+{
+"code": 200,
+"msg": "登录成功",
+"data": {
+"userId": 10001,
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+"nickname": "小明",
+"avatar": "http://xxx/avatar.jpg",
+"creditScore": 100,
+"creditLevel": 3
+}
+}
+1.4 获取用户信息
+项目 内容
+接口 GET /api/user/info
+鉴权 是
+描述 获取当前登录用户信息
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"userId": 10001,
+"username": "xiaoming",
+"nickname": "小明",
+"phone": "138****8888",
+"avatar": "http://xxx/avatar.jpg",
+"gender": 1,
+"school": "XX大学",
+"studentNo": "2021001001",
+"creditScore": 95,
+"creditLevel": 2,
+"availablePoints": 500,
+"createTime": "2024-01-15 10:30:00"
+}
+}
+1.5 更新用户信息
+项目 内容
+接口 PUT /api/user/info
+鉴权 是

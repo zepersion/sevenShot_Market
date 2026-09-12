@@ -3,12 +3,12 @@ package org.example.orderservice.Service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.constraints.NotNull;
-import org.example.common.DTO.AllGoodsDTO.OrdinaryOrderDTO;
-import org.example.common.VO.*;
-import org.example.common.VO.OrderVO.OrderDetailVO.DetailOrderVO;
-import org.example.common.VO.OrderVO.OrderListVO;
-import org.example.common.VO.OrderVO.OrderResultVO;
-import org.example.common.VO.OrderVO.OrdinaryOrderVO;
+import org.example.common.dto.AllGoodsDTO.OrdinaryOrderDTO;
+import org.example.common.vo.OrderVO.OrderDetailVO.DetailOrderVO;
+import org.example.common.vo.OrderVO.OrderListVO;
+import org.example.common.vo.OrderVO.OrderResultVO;
+import org.example.common.vo.OrderVO.OrdinaryOrderVO;
+import org.example.common.vo.PageVO;
 import org.example.orderservice.entity.Order;
 
 public interface OrderService extends IService<Order> {

@@ -1,7 +1,6 @@
 package org.example.goodsservice.mq;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.nacos.shaded.io.grpc.Channel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -17,15 +16,12 @@ import org.example.goodsservice.entity.GoodsLike;
 import org.example.goodsservice.mapper.GoodsFavoriteMapper;
 import org.example.goodsservice.mapper.GoodsLikeMapper;
 import org.example.goodsservice.mapper.GoodsMapper;
-import org.example.common.Message.AllGoodsMsg.GoodsAuditTaskMessage;
 import org.example.common.Message.AllGoodsMsg.GoodsPublishMQMessage;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 

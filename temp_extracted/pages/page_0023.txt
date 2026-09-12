@@ -1,0 +1,36 @@
+{
+"code": 200,
+"msg": "success",
+"data": {
+"suggestedPrice": 3200.00,
+"priceRange": {
+"min": 2800.00,
+"max": 3600.00
+},
+"estimateBasis": "基于同类商品近期成交均价...",
+"saleTips": ["建议标题突出成色", "周末发布曝光更高"]
+}
+}
+6.3 AI智能分类打标签
+项目 内容
+接口 POST /api/ai/goods/classify
+鉴权 是
+描述 AI自动分类和提取标签
+请求参数：
+字段 类型 必填 描述
+title String 是 商品标题
+description String 是 商品描述
+返回示例：
+{
+"code": 200,
+"msg": "success",
+"data": {
+"categoryId": 3,
+"categoryName": "数码产品/平板",
+"tags": ["iPad", "平板", "苹果", "九成新"],
+"confidence": 0.95
+}
+}
+6.4 AI智能客服
+项目 内容
+接口 POST /api/ai/chat

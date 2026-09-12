@@ -1,10 +1,10 @@
 package org.example.aiservice.service;
 
-import org.example.common.DTO.aiDTO.AiGoodsEstimateDTO;
-import org.example.common.DTO.aiDTO.AiGoodsTextDTO;
-import org.example.common.VO.AiVO.AiGoodsTextVO;
-import org.example.common.VO.AiVO.AiclassifyVO;
-import org.example.common.VO.AiVO.GoodsEstimateVO;
+import org.example.common.dto.aiDTO.AiGoodsEstimateDTO;
+import org.example.common.dto.aiDTO.AiGoodsTextDTO;
+import org.example.common.vo.AiVO.AiGoodsTextVO;
+import org.example.common.vo.AiVO.AiclassifyVO;
+import org.example.common.vo.AiVO.GoodsEstimateVO;
 
 public interface AiService {
 

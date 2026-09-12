@@ -1,8 +1,8 @@
 package org.example.goodsservice.service;
 
-import org.example.common.DTO.AllGoodsDTO.GoodsFavoriteDTO;
-import org.example.common.VO.GoodsAllVO.GoodsVO;
-import org.example.common.VO.PageVO;
+import org.example.common.dto.AllGoodsDTO.GoodsFavoriteDTO;
+import org.example.common.vo.GoodsAllVO.GoodsVO;
+import org.example.common.vo.PageVO;
 
 public interface GoodsFavoriteService {
     void isFavorite(GoodsFavoriteDTO goodFavoriteDTO);

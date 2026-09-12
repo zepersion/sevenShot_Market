@@ -2,9 +2,9 @@ package org.example.goodsservice.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
-import org.example.common.DTO.AllGoodsDTO.GoodsCategoryDTO;
+import org.example.common.dto.AllGoodsDTO.GoodsCategoryDTO;
 
-import org.example.common.VO.GoodsAllVO.GoodsCategoryVO;
+import org.example.common.vo.GoodsAllVO.GoodsCategoryVO;
 import org.example.goodsservice.entity.GoodsCategory;
 import org.example.goodsservice.mapper.GoodsCategoryMapper;
 import org.example.goodsservice.service.GoodsCategoryService;

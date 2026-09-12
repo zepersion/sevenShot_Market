@@ -1,7 +1,7 @@
 package org.example.user.service;
 
 
-import org.example.common.VO.PageVO;
+import org.example.common.vo.PageVO;
 import org.example.user.entity.UserCredit;
 
 public interface UserCreditService {
