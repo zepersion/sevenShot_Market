@@ -175,4 +175,18 @@ private ChatModel chatModel;
         return vo;
 
     }
+
+    @Override
+    public String recommend(String text) {
+        String systemPrompt = "你是校园二手商品推荐助手，根据用户输入的关键词推荐相关商品，返回推荐文案。";
+        String content = chatModel.call(new Prompt(List.of(
+                new SystemMessage(systemPrompt),
+                new UserMessage(text)
+        )))
+                .getResult()
+                .getOutput()
+                .getContent();
+        log.info("AI推荐结果:{}", content);
+        return content;
+    }
 }

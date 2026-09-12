@@ -138,8 +138,8 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
                 .and(dto.getKeyWord() != null, wrapper -> {
                     wrapper.like(Reward::getTitle, dto.getKeyWord())
                             .or().like(Reward::getDescription, dto.getKeyWord());
-                }).le(dto.getMinReward() != null, Reward::getReward, dto.getMaxReward())
-                .ge(dto.getMaxReward() != null, Reward::getReward, dto.getMinReward())
+                }).ge(dto.getMinReward() != null, Reward::getReward, dto.getMinReward())
+                .le(dto.getMaxReward() != null, Reward::getReward, dto.getMaxReward())
                 .eq(dto.getTaskId() != null, Reward::getId, dto.getTaskId())
                 .eq(dto.getCategoryId() != null, Reward::getCategoryId, dto.getCategoryId());
         if (dto.getSortType() != null) {
@@ -246,8 +246,8 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
                     wrapper.like(Reward::getTitle, dto.getKeyWord())
                             .or().like(Reward::getDescription, dto.getKeyWord());
                 })
-                .le(dto.getMinReward() != null, Reward::getReward, dto.getMinReward())
-                .ge(dto.getMaxReward() != null, Reward::getReward, dto.getMaxReward())
+                .ge(dto.getMinReward() != null, Reward::getReward, dto.getMinReward())
+                .le(dto.getMaxReward() != null, Reward::getReward, dto.getMaxReward())
                 .eq(dto.getCategoryId() != null, Reward::getCategoryId, dto.getCategoryId());
         if (dto.getSortType() != null) {
             if (dto.getSortType() == 1) {

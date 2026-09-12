@@ -9,6 +9,7 @@ import org.example.common.VO.AiVO.AiGoodsTextVO;
 import org.example.common.VO.AiVO.AiclassifyVO;
 import org.example.common.VO.AiVO.GoodsEstimateVO;
 import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,11 @@ public class AiController {
     return Result.success(vo);
 }
     @PostMapping("/reviewPic")
-public Boolean reviewPic(String title,String  description)
+public Boolean reviewPic(@RequestParam String title, @RequestParam String description)
 {
     String userMsg="标题"+":"+title+","+"描述"+":"+description;
     String result = chatModel.call(new Prompt(List.of(new SystemMessage(AI_REVIEW_MASTER_PROMPT)
-                    , new SystemMessage(userMsg))))
+                    , new UserMessage(userMsg))))
             .getResult()
             .getOutput()
             .getContent();
