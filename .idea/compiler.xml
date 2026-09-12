@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Ai-service" />
+        <module name="gataWay" />
       </profile>
       <profile name="Annotation profile for SevenShot Market" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -36,6 +37,7 @@
       <module name="SevenShot_Market" options="" />
       <module name="ai-service" options="-parameters" />
       <module name="common" options="-parameters" />
+      <module name="gataWay" options="-parameters" />
       <module name="goods-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="reward-service" options="-parameters" />

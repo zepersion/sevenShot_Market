@@ -1,0 +1,45 @@
+spring:
+  profiles:
+    include: route
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: user-route
+          uri: lb://user-service
+          predicates:
+            - name: path
+              args:
+                patterns: /api/user/**
+                matchTrailingSlash: true
+        - id: goods-route
+          uri: lb://goods-service
+          predicates:
+            - name: path
+              args:
+                patterns: /api/goods/**
+                matchTrailingSlash: true
+        - id: order-route
+          uri: lb://order-service
+          predicates:
+            - name: path
+              args:
+                patterns: /api/order/**
+                matchTrailingSlash: true
+        - id: ai-route
+          uri: lb://ai-service
+          predicates:
+            - name: path
+              args:
+                patterns: /api/ai/**
+                matchTrailingSlash: true
+        - id: reward-route
+          uri: lb://reward-service
+          predicates:
+            - name: path
+              args:
+                patterns: /api/task/**
+                matchTrailingSlash: true
