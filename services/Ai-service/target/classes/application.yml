@@ -29,8 +29,8 @@ spring:
         port: 8719
   ai:
     openai:
-      api-key: sk-ws-H.PDPDLLH.uEyI.MEYCIQDWkrP8zSnY_0jnpy-osJU8j72x5CyJl-lZShF3_bLSvAIhAO__MfVCCBaffSMD6TevFVZsmaY5IXvFLHPFT9_bnSY2
-      base-url: https://ws-k99yk4xg1oxssw9j.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+      api-key: 你自己的key
+      base-url: 自己找模型的url
       chat:
         options:
           model: Qwen3.8-Max
